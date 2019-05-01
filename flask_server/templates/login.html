@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block title %}
+<title>로그인 페이지입니다.</title>
+{% endblock title %}
+
+{% block main %}
+<div class="container">
+    <div class="row">
+        <div class="col">
+        </div>
+        <div class="col-4">
+            <form class="form-signin" action="/login" method="POST">
+                <div class="text-center mb-4">
+                    <h1 class="h3 mb-3 font-weight-normal">로그인 화면</h1>
+                    <p>Build form controls with floating labels via the <code>:placeholder-shown</code> pseudo-element. <a href="https://caniuse.com/#feat=css-placeholder-shown">Works in latest Chrome, Safari, and Firefox.</a></p>
+                </div>
+                    
+                <div class="form-label-group">
+                    <input type="email" id="inputEmail" class="form-control" placeholder="Email address" required="" autofocus="" name="email">
+                    <label for="inputEmail" class="active">Email address</label>
+                </div>
+                    
+                <div class="form-label-group">
+                    <input type="password" id="inputPassword" class="form-control" placeholder="Password" required="" name="password">
+                    <label for="inputPassword" class="active">Password</label>
+                </div>
+                    
+                <div class="checkbox mb-3">
+                    <label>
+                        <input type="hidden" value="{{ request.args.get('next', '111') }}" name="111" />
+                        <input type="checkbox" value="remember-me"> Remember me
+                    </label>
+                </div>
+                <button class="btn btn-lg btn-primary btn-block waves-effect waves-light" type="submit">Sign in</button>
+                <p class="mt-5 mb-3 text-muted text-center">
+                    <span>
+                        <a href="" target="_blank" rel="noopener noreferrer">아이디 찾기</a>  |  
+                        <a href="" target="_blank" rel="noopener noreferrer">비밀번호 찾기</a>  |  
+                        <a href="" target="_blank" rel="noopener noreferrer">회원가입</a>
+                    </span>
+                </p>
+            </form>
+        </div>
+        <div class="col">
+        </div>
+    </div>
+</div>
+{% endblock main %}

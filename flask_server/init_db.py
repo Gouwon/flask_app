@@ -2,7 +2,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 
-mysql_url = "mysql+pymysql://dooo:root1!@localhost/dooodb?charset=utf8"
+mysql_url = "mysql+pymysql://dooo:root1!@127.0.0.1/dooodb?charset=utf8"
 engine = create_engine(mysql_url, echo=True, convert_unicode=True)
 
 # Declare & create Session

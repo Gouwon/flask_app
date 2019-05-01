@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block script %}
+<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+<script>
+
+$( document ).ready(function() {
+
+    $.ajax(
+  {url: '/users/',
+  dataType: 'json',
+  data: {"method":"POST"},
+  method: "POST",
+  success: function (data) {
+      console.log(">>>>>>>data ", data)
+  }
+  });
+
+});
+
+</script>
+{% endblock script %}

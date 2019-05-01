@@ -5,10 +5,11 @@ import os
 from flask_server.init_db import init_database, db_session
 
 app = Flask(__name__)
-import helloflask.views
+import flask_server.views
 
 app.debug = True
 app.jinja_env.trim_blocks = True
+app.config['JSON_AS_ASCII'] = False
 
 def dated_url_for(endpoint, **values):
     if endpoint == 'static':
