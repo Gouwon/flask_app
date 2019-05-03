@@ -6,6 +6,7 @@ from flask_server.init_db import init_database, db_session
 
 app = Flask(__name__)
 import flask_server.views
+import flask_server.apis
 
 app.debug = True
 app.jinja_env.trim_blocks = True
