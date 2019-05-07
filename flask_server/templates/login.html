@@ -22,13 +22,13 @@
                 </div>
                     
                 <div class="form-label-group">
-                    <input type="password" id="inputPassword" class="form-control" placeholder="Password" required="" name="password">
+                    <input type="password" id="inputPassword" class="form-control" placeholder="Password" required="" name="passwd">
                     <label for="inputPassword" class="active">Password</label>
                 </div>
                     
                 <div class="checkbox mb-3">
                     <label>
-                        <input type="hidden" value="{{ request.args.get('next', '111') }}" name="111" />
+                        <input type="hidden" value="{{ request.args.get('next', '/main') }}" name="111" />
                         <input type="checkbox" value="remember-me"> Remember me
                     </label>
                 </div>

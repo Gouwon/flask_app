@@ -1,1 +1,34 @@
 {% extends 'base.html' %}
+
+{% block title %}
+<title>this is post add page.</title>
+{% endblock title %}
+
+{% block template_css %}
+<link href="{{url_for('static', filename='summernote/summernote-lite.css')}}" rel="stylesheet">
+{% endblock template_css %}
+
+{% block main %}
+<div class="container">
+    <div class="row">
+        <form action="/posts/add" method="POST">
+            <label for="head" class="col-1">제 목 </label>
+            <input type="text" name="head" id="head" class="col-8">
+            <textarea id="summernote" name="content"></textarea>
+            <input type="submit" value="저장하기"></input>
+        </form>
+    </div>
+</div>
+{% endblock main %}
+
+{% block script %}
+<script src="{{url_for('static', filename='summernote/summernote-lite.js')}}"></script>
+
+<script>
+    $('#summernote').summernote({
+    placeholder: 'Hello bootstrap 4',
+    tabsize: 2,
+    height: 100
+    });
+</script>
+{% endblock script %}

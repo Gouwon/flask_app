@@ -1,6 +1,12 @@
 from flask_server import app
 from functools import wraps
-from flask import render_template, jsonify, url_for, redirect, request
+from flask import render_template, jsonify, url_for, redirect, request, session
+from flask_server.models import User
+
+@app.route('/', methods=['GET'])
+def template_base():
+    return render_template('base.html')
+
 
 @app.route('/test', methods=['GET'])
 def draw_test():
@@ -21,6 +27,27 @@ def template_login():
 @app.route('/join', methods=['GET'])
 def template_join():
     return render_template('join.html')
+
+@app.route('/login', methods=['POST'])
+def login():
+
+    data = request.form
+    email = data['email']
+    passwd = data['passwd']
+    
+    user = User.query.filter(email==email, passwd==passwd).one()
+    print("<<<<<<<<", user)
+
+    if user != None:
+        session['loginUser'] = {'userid': user.id, 'nickname': user.nickname}
+        if next != None:
+            return redirect(next)
+        else:
+            return redirect('/main')
+    
+
+    return redirect('/login')
+
 
 # 개인정보수정 페이지
 @app.route('/setup', methods=['GET'])
