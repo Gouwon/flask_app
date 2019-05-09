@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+
+{% block main %}
+<div class="container">
+  <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups" class="row">
+    <div class="btn-group mr-2" role="group" aria-label="First group" class="col">
+      <button type="button" class="btn btn-secondary" id="heading">단락 구분</button>
+      <button type="button" class="btn btn-secondary" id="bold"><strong>B</strong></button>
+      <button type="button" class="btn btn-secondary" id="underline"><u>U</u></button>
+      <button type="button" class="btn btn-secondary" id="italic"><i>i</i></button>
+    </div>
+    <div class="btn-group mr-2" role="group" aria-label="Second group" class="col">
+      <button type="button" class="btn btn-secondary" id="fontName">폰트 선택</button>
+      <div class="dropdown">
+          <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" id="fontSize">
+            폰트 크기 
+            <select class="custom-select" id="textsize">
+                <option selected>Choose...</option>
+                {% for i in range(50) %}
+                  <option value="{{i+1}}">{{i+1}}</option>
+                {% endfor %}
+              </select>
+          </button>
+        </div>
+      <button type="button" class="btn btn-secondary" id="fontColor">글자 색깔</button>
+    </div>
+    <div class="btn-group mr-2" role="group" aria-label="Third group" class="col">
+      <button type="button" class="btn btn-secondary" id="insertUnorderedList"><i class="fas fa-list-ul"></i></button>
+      <button type="button" class="btn btn-secondary" id="insertOrderedList"><i class="fas fa-list-ol"></i></button>
+      <button type="button" class="btn btn-secondary" id="justifyLeft"><i class="fas fa-align-left"></i></button>
+      <button type="button" class="btn btn-secondary" id="justifyCenter"><i class="fas fa-align-center"></i></button>
+      <button type="button" class="btn btn-secondary" id="justifyRight"><i class="fas fa-align-right"></i></button>
+      <button type="button" class="btn btn-secondary" id="justifyFull"><i class="fas fa-align-justify"></i></button>
+      <button type="button" class="btn btn-secondary" id="outdent"><i class="fas fa-outdent"></i></button>
+      <button type="button" class="btn btn-secondary" id="indent"><i class="fas fa-indent"></i></button>
+    </div>
+    <div class="btn-group mr-2" role="group" aria-label="Fourth group" class="col">
+      <!-- 표 기능 추가하기 -->
+      <button type="button" class="btn btn-secondary"><i class="fas fa-table"></i></button>
+      <!-- 링크 추가하는 기능 보완하기 -->
+      <button type="button" class="btn btn-secondary" id="createLink"><i class="fas fa-link"></i></button>
+
+      <input type='file' id='file' name='file' style="width:0; height:0; " />
+      <button type="button" class="btn btn-secondary" id="insertImage"><i class="fas fa-image"></i></button>
+      <!-- 비디오 기능 추가하기 -->
+      <button type="button" class="btn btn-secondary"><i class="fas fa-video"></i></button>
+    </div>
+  </div>
+  <div class="row mr-2">
+    <IFRAME name="editorfeild" id="editorfeild" class="col"></IFRAME>
+  </div>
+  <div class="row">
+    <button type="button" class="btn btn-secondary" id="post_save"><i class="fas fa-save"></i></button>
+  </div>
+</div>
+{% endblock main %}
+
+{% block script %}
+<script>
+  // 버튼에 포스트 저장하는 함수 추가.
+  $('button').attr('onclick', "gwfunctions(this.id)");
+
+  $('#post_save').attr('onclick', "gwclks('post_save')");
+  editorfeild.document.designMode = "On";
+
+
+  function htmledit(excute,values)
+        {   
+            console.log("aaaaa", ...arguments)
+            console.log(excute, values)
+                if(values==null)
+                {
+                  editorfeild.document.execCommand(excute);
+                }
+                else
+                {
+                  editorfeild.document.execCommand(excute,"",values);
+                }
+        }
+  function datasubmit()
+        {
+                form.comment.value = editorfeild.document.body.innerHTML;
+        };
+  
+  function gwfunctions(ids) {
+    var $id = ids;
+    var value = $('#'+$id).val();
+
+    if ($id === "insertImage"){
+      $('#file').click()
+      console.log($("#file").files)
+      var data = {
+                  "method" : 'POST',
+                  "content" : document.getElementById('file').files[0]
+
+      }
+
+      // send_ajax('/files', 'POST', data, 'json')
+      // ajax로 이미지 저장하고, url을 받아서 value값으로 넘기자.
+      // htmledit($id, value);
+    } else if( $id === "post_save") {
+      var data = {
+        "content" : editorfeild.document.body.innerHTML
+      }
+
+
+
+    } else htmledit($id, value);
+  } 
+    
+</script>
+{% endblock script %}

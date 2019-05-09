@@ -79,3 +79,6 @@ def template_list_inquiry():
 def template_main():
     return render_template('main.html')
 
+@app.route('/tt', methods=['GET'])
+def template_txteditor():
+    return render_template('txteditor.html')

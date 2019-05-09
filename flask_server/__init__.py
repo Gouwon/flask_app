@@ -8,6 +8,11 @@ app = Flask(__name__)
 import flask_server.views
 import flask_server.apis
 
+UPLOAD_FOLDER = '/Users/mac/workspace/flask_app/flask_server/static/data/'
+ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
+
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
 app.debug = True
 app.jinja_env.trim_blocks = True
 app.config['JSON_AS_ASCII'] = False

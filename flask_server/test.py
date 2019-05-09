@@ -1,13 +1,4 @@
-d1 = {"data" : { "email" : "a@com",
-                            "passwd" : "a",
-                            "nickname" : "gun"}  }
+l = '/Users/mac/workspace/flask_app/flask_server/static/data/'
 
-d2 = {"data" : { "email" : "a@com",
-                            "passwd" : "a",
-                            "nickname" : "kim"}  }
-
-
-l = [1, 2, 3]
-l1 =  [1,2,4]
-# print("dddd", d1.differnce(d2))
-print("Ddddd", l.differnce(l1))
+print(l[43], l[44: 47], l[:43])
+print(l[43:])

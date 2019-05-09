@@ -1,6 +1,7 @@
 from flask_server import app
 from functools import wraps # login required annotaion!
-from flask import Flask, render_template, jsonify, url_for, redirect, request, session
+from flask import Flask, render_template, jsonify, url_for, redirect, request, session, send_from_directory
+from werkzeug.utils import secure_filename  # this is required for file upload from client
 
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy import func
@@ -8,9 +9,13 @@ from flask_server.models import User, Post
 from flask_server.init_db import db_session
 
 from pprint import pprint
-
+import os
 
 users = [ {"id" : 1, "name" : "김일수"}, {"id" : 2, "name" : "김이수"} ]
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 # 로그인 API
 @app.route('/users', methods=['GET'])
@@ -99,6 +104,7 @@ def update_user(user_id):
         db_session.rollback()
         return jsonify({"result" : {"code" : 500, "message" : "user is existed."}})
 
+
 @app.route('/users/d/<user_id>', methods=['POST'])
 def delete_user(user_id):
     '''
@@ -114,6 +120,7 @@ def delete_user(user_id):
         return jsonify({"result" : {"code" : 500, "message" : "user is existed."}})
 
 
+
 # POST API
 @app.route('/posts/add', methods=['POST'])
 def post_add():
@@ -123,19 +130,74 @@ def post_add():
     content = request.form.get('content')
     # author = session['loginUser']['id']
     author = 1
-    print("0")
-    # return jsonify({'result':'OK'})
     post = Post(head, content, author)
-    print(">>>>>>", post)
     try:
-        print("1")
         db_session.add(post)
-        print("2")
         db_session.commit()
-        print("3")
         return jsonify({"result" : {"code" : 200, "message" : "post successfully added."}})
     except SQLAlchemyError as sqlerr:
-        print("4")
         db_session.rollback()
-        print("5")
         return jsonify({"result" : {"code" : 500, "message" : "post is failed to add."}})
+
+@app.route('/files', methods=['POST'])
+def take_file(user_id):
+    way = request.form.get('method')
+
+    if way == "POST":
+        return redirect(url_for('upload_file'), code=307)
+    else:
+        return redirect(url_for('delete_file'), code=307)
+
+# image uploade api
+
+@app.route('/files/upload', methods=['POST'])
+def upload_file():
+    '''
+        :: returns img src string as json.
+        :: if there is same name file in server, then it will automactically rename the file.
+        :: when server do this, server store actual file in directory which is made for each user, and insert file information(filename, filename2, size, user, datatype...) into db so that server can determine user's total usage to restrict him/her upload.
+    '''
+
+
+    ## user directory check (if not found on server, then create specific user's directory)
+    # user_id = session['login']['userid']
+    user_id = 1
+
+    
+    user_directory_path = app.config['UPLOAD_FOLDER'] + str(user_id)
+    _isdir = os.path.isdir(user_directory_path)
+
+    if not(_isdir):
+        os.mkdir(user_directory_path)
+    
+    ## save uploaded file in user directory
+    upfile = request.files['file']
+
+    print(upfile)
+    return jsonify({"result" : "OK"})
+    invalid_character_list = ['"', '\\', '|', '/', '*', '?', '<', '>', ':']
+    
+    filename = str(upfile.filename)
+    for invalid_character in invalid_character_list:
+        filename.replace(invalid_character, "")
+
+    user_file = os.path.join(user_directory_path, filename)
+    if file and allowed_file(filename):
+        if os.path.isfile(user_file):
+            idx = user_file.rindex('.')
+            if idx == -1:
+                user_file += '1'
+            else:
+                user_file = user_file[:idx] + '1' + user_file[idx:]
+        file.save(user_file)
+
+    ## insert file information into db
+
+
+    ## return file src in string as json formatting
+
+    return jsonify({"filepath" : user_file[43:] })
+
+@app.route('/files/delete/<filename>', methods=['POST'])
+def delete_file():
+    return jsonify({"result" : "OK"})
