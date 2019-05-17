@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block main %}
+<select name="t" id="t" change="fn(this.id)">this is test.
+    <option value="전체">전체</option>
+    {% for i in range(10) %}
+    <option value="{{i}}">{{i}}</option>
+    {% endfor %}
+</select>
+
+<script>
+$('#t').on('change', function(){ console.log(this.value)});
+</script>
+{% endblock main%}

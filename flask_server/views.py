@@ -45,8 +45,9 @@ def login():
         else:
             return redirect('/main')
     
-
     return redirect('/login')
+
+
 
 
 # 개인정보수정 페이지

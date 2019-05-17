@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 
+{% set fontFamily = ['default', '굴림', '굴림체', '궁서', '궁서체', '돋움', '돋움체', '바탕', '바탕체', '휴먼엽서체', 'Andale Mono', 'Arial', 'Arial Black', 'Arial Narrow', 'Bookman Old Style', 'Comic Sans MS', 'Copperlate Gothic', 'Courier', 'Courier New', 'Fixedsys', 'Garamond', 'Georgia', 'Impact', 'Lucida Blackletter', 'Lucida Bright', 'Lucida Calligraphy Italic', 'Lucida Console', 'Map Symbols', 'Marlett', 'MingLiu', 'Minion Web', 'Modem', 'Monotype Sorts', 'Monotype.com', 'MS Gothic', 'MS Hei', 'MS Outlook', 'MS Sans Serif', 'MS Serif', 'MS Song', 'MS-DOS CP', 'MT Extra', 'Papyrus', 'Poor Richard', 'small Fonts', 'Symbol', 'System', 'Tahoma', 'Terminal', 'Times New Roman', 'Terbuchet MS', 'Verdana', 'Verdata Italic', 'Viner Hand ITC', 'Webdings', 'WingDings'] %}
 {% block main %}
 <div class="container">
   <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups" class="row">
@@ -10,19 +11,25 @@
       <button type="button" class="btn btn-secondary" id="italic"><i>i</i></button>
     </div>
     <div class="btn-group mr-2" role="group" aria-label="Second group" class="col">
-      <button type="button" class="btn btn-secondary" id="fontName">폰트 선택</button>
-      <div class="dropdown">
-          <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" id="fontSize">
-            폰트 크기 
-            <select class="custom-select" id="textsize">
-                <option selected>Choose...</option>
-                {% for i in range(50) %}
-                  <option value="{{i+1}}">{{i+1}}</option>
-                {% endfor %}
-              </select>
-          </button>
-        </div>
-      <button type="button" class="btn btn-secondary" id="fontColor">글자 색깔</button>
+      <button type="button" class="btn btn-secondary" id="textName">폰트 선택
+        <select class="custom-select" id="fontName">
+            <option selected>Choose...</option>
+            {% for f in fontFamily %}
+              <option value="{{f}}">{{f}}</option>
+            {% endfor %}
+          </select>
+      </button>
+      
+      <button type="button" class="btn btn-secondary" id="textSize">폰트 크기
+        <select class="custom-select" id="fontSize">
+            <option selected>Choose...</option>
+            {% for i in range(50) %}
+              <option value="{{i+1}}">{{i+1}}</option>
+            {% endfor %}
+          </select>
+      </button>
+      <input type="color" name="color" id="foreColor" style="width: 0; height: 0;">
+      <button type="button" class="btn btn-secondary" id="color">글자 색깔</button>
     </div>
     <div class="btn-group mr-2" role="group" aria-label="Third group" class="col">
       <button type="button" class="btn btn-secondary" id="insertUnorderedList"><i class="fas fa-list-ul"></i></button>
@@ -61,8 +68,12 @@
   $('button').attr('onclick', "gwfunctions(this.id)");
 
   $('#post_save').attr('onclick', "gwclks('post_save')");
+  $('#textSize').removeAttr('onclick');
+  $('#fontSize').on('change', function() { gwfunctions(this.id) });
+  $('#foreColor').on('change', function() { gwfunctions(this.id) });
+  $('#textName').removeAttr('onclick');
+  $('#fontName').on('change', function() { gwfunctions(this.id) });
   editorfeild.document.designMode = "On";
-
 
   function htmledit(excute,values)
         {   
@@ -85,7 +96,7 @@
   function gwfunctions(ids) {
     var $id = ids;
     var value = $('#'+$id).val();
-
+    console.log($id, value);
     if ($id === "insertImage"){
       $('#file').click()
       console.log($("#file").files)
@@ -94,7 +105,6 @@
                   "content" : document.getElementById('file').files[0]
 
       }
-
       // send_ajax('/files', 'POST', data, 'json')
       // ajax로 이미지 저장하고, url을 받아서 value값으로 넘기자.
       // htmledit($id, value);
@@ -105,7 +115,11 @@
 
 
 
-    } else htmledit($id, value);
+    } else if ( $id === "color") {
+      $('#foreColor').click();
+  
+    } 
+    else htmledit($id, value);
   } 
     
 </script>
