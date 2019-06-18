@@ -12,7 +12,12 @@
 label {
     font-size:smaller;
     color: gray;
-}  
+}
+
+.btn-primary {
+    right: 30px;
+}
+
 </style>
 {% endblock style %}
 
@@ -32,14 +37,14 @@ label {
         </div>
         <input type="text" class="form-control" placeholder="First name" aria-label="Username" aria-describedby="basic-addon1">
     </div>
-    <div class="input-group mb-3">
+    <div class="input-group">
         <div class="input-group-prepend">
             <span class="input-group-text" id="basic-addon1"> 아이디 </span>
         </div>
         <input type="text" class="form-control" placeholder="아이디" aria-label="Username" aria-describedby="basic-addon1" id="id">
     </div>
     <label for="id">문자, 숫자, 마침표를 사용할 수 있습니다.</label>
-    <div class="input-group mb-3 contianer">
+    <div class="input-group contianer">
         <div class="input-group-prepend">
             <span class="input-group-text" id="basic-addon1"> 비밀번호 </span>
         </div>
@@ -47,6 +52,23 @@ label {
         <input type="password" class="form-control col" placeholder="재입력" aria-label="Username" aria-describedby="basic-addon1">
         <button class="btn"><i class="far fa-eye-slash"></i></button>
     </div>
-    <label for="password">문자, 숫자, 기호를 조합하여 8자 이상을 사용하세요</label>
+    <label for="password">문자, 숫자, 기호를 조합하여 8자 이상을 사용하세요.</label>
+    <div class="input-group mb-3">
+        <div class="input-group-prepend">
+          <span class="input-group-text" id="basic-addon1">생년월일</span>
+        </div>
+        <input type="text" class="form-control" placeholder="년" aria-label="Username" aria-describedby="basic-addon1">
+        <input type="text" class="form-control" placeholder="월" aria-label="Username" aria-describedby="basic-addon1">
+        <input type="text" class="form-control" placeholder="일" aria-label="Username" aria-describedby="basic-addon1">
+      </div>
+    <div class="input-group mb-3">
+        <div class="input-group-prepend">
+            <span class="input-group-text" id="basic-addon1"> 복구 이메일 </span>
+        </div>
+        <input type="email" class="form-control" placeholder="복구 이메일" aria-label="Username" aria-describedby="basic-addon1" id="restore_email">
+    </div>
+    <div>
+        <button type="button" class="btn btn-primary">다음</button>
+    </div>
 </div>
 {% endblock main %}
