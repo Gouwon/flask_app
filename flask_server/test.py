@@ -172,7 +172,26 @@ abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ
 
 import re
 
-pattern = re.compile('"(.*)"')
-result = re.findall(pattern, l)
+# pattern = re.compile('"(.*)"')
+# result = re.findall(pattern, l)
 
-print(result)
+# print(result)
+
+## 위치 인자 
+def sum(*args):
+    sum = 0
+    print(">>>>>>> type(args) ", type(args))
+    print(">>>>>>> args", args)
+    for i in args:
+        sum += i
+    return sum
+ 
+print(sum(5,3,1,2))
+ 
+## 키워드 인자 
+def print_kwargs(**kwargs):
+    print(">>>>>> ", type(kwargs))
+    print("키워드인자를 출력 : ", kwargs)
+ 
+# print_kwargs('아침' : '시리얼', '점심' : '소고기', '저녁' : '없음') 
+print_kwargs(아침='샐러드', 점심='소고기', 저녁='없음')

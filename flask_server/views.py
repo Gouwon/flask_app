@@ -10,7 +10,7 @@ def template_base():
 
 @app.route('/test', methods=['GET'])
 def draw_test():
-    return render_template('test.html')
+    return render_template('test2.html')
     # return redirect('https://www.naver.com')
 
 # 대문 페이지
