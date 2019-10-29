@@ -1,3 +1,13 @@
 flask_server/static/bootstrap
 flask_server/__pycache__
 flask_server/static/data
+flaskr/__pycache__/
+flaskr/instance
+
+.pytest_cashe/
+.coverage
+htmlcov/
+
+dist/
+build/
+*.egg-info/
