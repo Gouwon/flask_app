@@ -3,7 +3,7 @@ from flask import g, session
 from flaskr.db import get_db
 
 def test_register(client, app):
-    assert client.get('/get/register').status_code == 200
+    assert client.get('/auth/register').status_code == 200
     ## client.get() makes a GET request and returns the Response object returned by Flask. Similarly, client.post() makes a POST request, converting the data dict into form data.
 
     ## data contains the body of the response as bytes. If you expect a certain value to render on the page, check that it’s in data. Bytes must be compared to bytes. If you want to compare Unicode text, use get_data(as_text=True) instead.
@@ -24,7 +24,7 @@ def test_register_validate_input(client, username, password, message):
 def test_login(client, auth):
     assert client.get('/auth/login').status_code == 200
     response = auth.login()
-    assert response.headers['Location'] == 'http://localhost'
+    assert response.headers['Location'] == 'http://localhost/'
 
     with client:
         client.get('/')
@@ -32,7 +32,7 @@ def test_login(client, auth):
         assert g.user['username'] == 'test'
     ## Using client in a with block allows accessing context variables such as session after the response is returned. Normally, accessing session outside of a request would raise an error.
 
-@pytest.mark.parametrize(('username', 'password', 'message'),( ('a', 'test', b'Incorrect username'), ('test', 'a', b'Incorrect password'),))
+@pytest.mark.parametrize(('username', 'password', 'message'),( ('a', 'test', b'Incorrect username.'), ('test', 'a', b'Incorrect password.'),))
 def test_login_validate_input(auth, username, password, message):
     response = auth.login(username, password)
     assert message in response.data

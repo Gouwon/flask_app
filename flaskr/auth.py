@@ -20,11 +20,11 @@ def register():
         elif not password:
             error = 'Password is required.'
         elif db.execute('SELECT id FROM user WHERE username = ?', (username,)).fetchone() is not None:
-            error = 'User {} is already registerd.'.format(username)
+            error = 'User {} is already registered.'.format(username)
             ## db.execute takes a SQL query with ? placeholders for any user input, and a tuple of values to replace the placeholders with. The database library will take care of escaping the values so you are not vulnerable to a SQL injection attack
 
         if error is None:
-            db.execute('INSERT INTO user (username, password) value(?, ?)', (username, generate_password_hash(password)))
+            db.execute('INSERT INTO user (username, password) VALUES (?, ?)', (username, generate_password_hash(password)))
             db.commit()
             return redirect(url_for('auth.login'))
         
@@ -43,7 +43,7 @@ def login():
         user = db.execute('SELECT * FROM user WHERE username = ?', (username,)).fetchone()
 
         if user is None:
-            error = 'Incorrenct username.'
+            error = 'Incorrect username.'
         elif not check_password_hash(user['password'], password):
             error = 'Incorrect password.'
         

@@ -27,6 +27,7 @@ def create_app(test_config=None):
     app.debug = True
 
     from . import db
+    print("/\/\/\/\/\/\/\/\/\/\/\/\/\/\/")
     db.init_app(app)
 
     from . import auth
