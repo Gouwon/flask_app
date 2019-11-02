@@ -1,11 +1,15 @@
-import os
+import os, sys
 from flask import Flask
+
+
 
 def create_app(test_config=None):
     # create and configure the app
     app = Flask(__name__, instance_relative_config=True)
     ## instance_relative_config attribute telling flask that the instance folder is located outside the flaskr package.
-    app.config.from_mapping(DATABASE=os.path.join(app.instance_path, 'flaskr.sqlite'))
+    app.config.from_mapping(
+        SECRET_KEY=app.config,
+        DATABASE=os.path.join(app.instance_path, 'flaskr.sqlite'))
     ## SECRET_KEY 'dev' will provide convenient value during development but when deploying it should be random value.
     ## app.instance_path make new directory named 'instance' and meaning this directory.
 
