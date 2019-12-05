@@ -1,45 +1,30 @@
 {% extends 'base.html' %}
 
 {% block title %}
-<title>regist.html</title>
+<title>Regist</title>
 {% endblock title %}
 
 {% block body %}
 <p>this is regist.html</p>
-<form name="regist-form" method="POST" action="/auth/regist">
+<form name="regist-form" method="POST" action="/auth/regist" onsubmit="return gw()">
     <label for="userid">User ID</label>
     <input type="text" name="userid" id="userid">
     <label for="username">User Name</label>
     <input type="text" name="username" id ="username" autocomplete="username">
-    <label for="password">Password</label>
-    <input type="password" name="password" id="password" autocomplete="current-password">
-    <button onclick='gw()'>Submit</button>
+    <label for="password1">Password1</label>
+    <input type="password" name="password1" id="password1" autocomplete="current-password">
+    <label for="password2">Password2</label>
+    <input type="password" name="password2" id="password2" autocomplete="current-password">    
+    <button>Submit</button>
 </form>
 {% endblock body %}
 
 {% block script %}
-<!-- 패스워드 암호화를 위한 js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/aes.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/hmac-md5.js"></script>
-
 <script>
     
 function gw(){
     if(!!check_form()){
-        var datas = document.getElementsByTagName('input');
-        var data = {};
-        for(var i=0;i<datas.length;i++){
-            key = datas[i].name;
-            value = datas[i].value;
-            if(datas[i].name == 'password'){
-                value = CryptoJS.MD5(value);
-            }
-            data[key] = value;
-        }
-        send_ajax('/auth/regist', 'POST', data, 'json', function(res){
-            console.log(res);
-        })
-        return false
+        return true
     }
     return false
 }
@@ -47,10 +32,18 @@ function gw(){
 function check_form() {
     var data = { userid : document.getElementById('userid').value,
                 username : document.getElementById('username').value,
-                password : document.getElementById('password').value
+                password1 : document.getElementById('password1').value,
+                password2 : document.getElementById('password2').value
     }
-    
-    if(!!data.userid && !!data.username && !!data.password){
+
+    if(!!data.userid || !!data.username){
+        if(data.password1 != data.password2){
+            alert("비밀번호를 재확인해 주세요.")        
+            return false
+        }
+    }
+
+    if(!!data.userid && !!data.username && !!data.password1 && !!data.password2){   
         return true
     }
 

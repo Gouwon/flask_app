@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block title %}
+<title>Login</title>
+{% endblock title%}
+
+{% block body %}
+<p>this is login.html</p>
+
+<form name="login-form" action="/auth/login" method="post" onsubmit="return gw()">
+    <div id="id_area">
+        <label for="ID">ID</label>
+        <input type="text" name="id" id="id">
+    </div>
+    <div id="password_area">
+        <label for="password">Password</label>
+        <input type="password" name="password" id="password">
+    </div>
+    {% if result == 'not found' %}
+    <p style="color:red">가입하지 않은 아이디이거나, 잘못된 비밀번호입니다.</p>
+    {% endif %}
+    <button type="reset">Reset</button>
+    <button type="submit">Submit</button>
+</form>
+
+<div>
+    <a href="/help" target="_blank" rel="noopener noreferrer"><p>ID 찾기</p></a>
+    <a href="/help" target="_blank"><p>Password 찾기</p></a>
+    <a href="/help" target="_blank"><p>회원가입</p></a>
+</div>
+{% endblock body %}
+
+{% block script %}
+<script>
+function gw(){
+    if(!!check_form()){
+        return false
+    }
+    return false
+}
+
+function check_form(){
+    var id = document.getElementById('id').value;
+    var pw = document.getElementById('password').value;
+    var para = document.createElement('p');
+    var t, tid, node, element;
+    
+    if(!id){
+        node = document.createTextNode('ID를 입력해주세요.');
+        element = document.getElementById('id_area');
+    }else if(!pw){
+        node = document.createTextNode('Password를 입력해주세요.');
+        element = document.getElementById('password_area');
+    };
+
+    para.appendChild(node);
+    element.appendChild(para);
+
+    return true;
+}
+</script>
+{% endblock script %}

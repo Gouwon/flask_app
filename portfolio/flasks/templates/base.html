@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    {% block title %}
+    <title>Base.html</title>
+    {% endblock title %}
+    <!-- jquery -->
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+</head>
+<body>
+    {% block body %}
+    <p>this is base.html</p>
+    {% endblock body %}
+
+    <script>
+    function send_ajax(url, method='POST', data, dataType, fn) {
+    var options = {
+        url: url,
+        data: data,
+        type: method,
+        dataType: dataType
+    };
+
+    if (dataType == 'ajson')
+        options.contentType= 'application/json';
+
+    $.ajax(options).done(function (res) {
+        if (fn)
+            fn(res)
+
+    }).fail(function (xhr, status, errorThrown) {
+        console.error("Sorry, there was a problem!", xhr, status, errorThrown);
+
+    }).always(function (xhr, status) {
+        console.log("The request is complete!");
+    });
+}
+    </script>
+    {% block script %}
+    {% endblock script %}
+</body>
+</html>
