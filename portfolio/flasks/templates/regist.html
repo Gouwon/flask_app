@@ -29,26 +29,91 @@ function gw(){
     return false
 }
 
-function check_form() {
-    var data = { userid : document.getElementById('userid').value,
-                username : document.getElementById('username').value,
-                password1 : document.getElementById('password1').value,
-                password2 : document.getElementById('password2').value
-    }
+function char_valid(str , spc = true, kor = true){
+    var check_num = /[0-9]/; 
+    var check_eng = /[a-zA-Z]/; 
+    var check_spc = /[~!@#$%^&*()_+|<>?:{}]/;
+    var check_kor = /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/;
 
-    if(!!data.userid || !!data.username){
-        if(data.password1 != data.password2){
-            alert("비밀번호를 재확인해 주세요.")        
-            return false
+    if(spc && kor){
+        if(check_num.test(str) && check_eng.test(str) && check_spc.test(str) && check_kor.test(str)){
+            return true;
+        }
+    }else if(spc && !kor){
+        if(check_num.test(str) && check_eng.test(str) && check_spc.test(str)){
+            return true;
+        }
+    }else if(!spc && kor){
+        if(check_num.test(str) && check_eng.test(str) && check_kor.test(str)){
+            return true;
+        }
+    }else{
+        if(check_num.test(str) && check_eng.test(str)){
+            return true;
         }
     }
 
-    if(!!data.userid && !!data.username && !!data.password1 && !!data.password2){   
-        return true
-    }
+    return false;
+}
 
-    alert("필수정보를 입력하여 주세요.")
-    return false
+function check_form(){
+    var data = { 'userid' : document.getElementById('userid').value,
+                'username' : document.getElementById('username').value,
+                'password1' : document.getElementById('password1').value,
+                'password2' : document.getElementById('password2').value
+    };
+    var msg;
+    var valid = false;
+
+    for(var datum in data){
+        console.log(">>>>>", datum, "||||", data.datum);
+        if(datum=='userid'){
+            console.log("!!!!!!!!!!!!!")
+            if(char_valid(data.datum, spc=false, kor=false)){
+                if(data.datum.length >= 5 && data.datum.length < 13){
+                    valid = true;
+                }else{
+                    msg = "ID는 최소 5자 이상 12자 이하입니다.";
+                };
+            }else{
+                msg = "ID에는 영어와 숫자만 사용이 가능합니다."
+            };
+        }else if(datum=='username'){
+            console.log("@@@@@@@@@@@@")
+            if(char_valid(data.datum)){
+                if(!data.datum.length){
+                    msg = "Username을 입력해주세요."
+                }else{
+                    valid = true;
+                };
+            };
+        }else if(datum=='password1'){
+            console.log("###########")
+            if(char_valid(data.datum, kor=false)){
+                if(data.datum.length >= 8){
+                    valid = true;
+                }else{
+                    msg = "Password는 최소 8자 이상입니다."
+                };
+            }else{
+                msg = "Password에는 한글을 사용할 수 없습니다."
+            };
+        }else{
+            console.log("$$$$$$$$$$$$$")
+            if(data.datum == data['password2']){
+                valid = true;
+            }else{
+                msg = "Password가 같지 않습니다."
+            };
+        };
+    };
+
+    if(!valid){
+        alert(msg);
+        return valid;
+    }else{
+        return valid;
+    };
 }
 </script>
 {% endblock script %}

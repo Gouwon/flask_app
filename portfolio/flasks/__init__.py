@@ -9,7 +9,9 @@ app.register_blueprint(auth.bp)
 
 from . import init_db
 
+
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://dooo:root1!@localhost/dooodb?charset=utf8'
+app.config['SECRET_KEY'] = 'development'
 
 @app.before_first_request
 def beforeFirstRequest():

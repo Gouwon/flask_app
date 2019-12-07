@@ -15,3 +15,6 @@ class User(Base):
     
     def __repr__(self):
         return '<User %r %r>' % (self.username, self.password)
+
+    def _jsonify(self):
+        return {"username" : self.username, "userid" : self.userid}
