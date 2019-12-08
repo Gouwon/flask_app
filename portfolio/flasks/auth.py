@@ -17,8 +17,9 @@ def register():
         for rq in request.form:
             key = rq
             value = request.form.get(rq)
-            data = {key : value}
+            data[key] = value
         pprint(data)
+
         return redirect(url_for('auth.login'))
     return render_template('regist.html')
 

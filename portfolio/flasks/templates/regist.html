@@ -29,29 +29,29 @@ function gw(){
     return false
 }
 
-function char_valid(str , spc = true, kor = true){
+function char_valid(str , spc = false, kor = false){
     var check_num = /[0-9]/; 
     var check_eng = /[a-zA-Z]/; 
     var check_spc = /[~!@#$%^&*()_+|<>?:{}]/;
     var check_kor = /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/;
 
-    if(spc && kor){
-        if(check_num.test(str) && check_eng.test(str) && check_spc.test(str) && check_kor.test(str)){
+    if(!spc && !kor){   //  특수문자, 한글이 없어야 함.
+        if(check_num.test(str) && check_eng.test(str) && !check_spc.test(str) && !check_kor.test(str)){
             return true;
-        }
-    }else if(spc && !kor){
-        if(check_num.test(str) && check_eng.test(str) && check_spc.test(str)){
+        };
+    }else if(!spc && kor){  // 특수문자는 없고, 한글은 있어도 됨.
+        if(check_num.test(str) && check_eng.test(str) && !check_spc.test(str)){
             return true;
-        }
-    }else if(!spc && kor){
-        if(check_num.test(str) && check_eng.test(str) && check_kor.test(str)){
+        };
+    }else if(spc && !kor){  // 특수문자도 되고, 한글은 없어야 함. for 패스워드
+        if(check_num.test(str) && check_eng.test(str) && check_spc.test(str) && !check_kor.test(str)){
             return true;
-        }
-    }else{
+        };
+    }else{  // 특수문자, 한글가 있어도 됨.
         if(check_num.test(str) && check_eng.test(str)){
             return true;
-        }
-    }
+        };
+    };
 
     return false;
 }
@@ -63,47 +63,77 @@ function check_form(){
                 'password2' : document.getElementById('password2').value
     };
     var msg;
-    var valid = false;
+    var valid = true;
 
     for(var datum in data){
-        console.log(">>>>>", datum, "||||", data.datum);
         if(datum=='userid'){
-            console.log("!!!!!!!!!!!!!")
-            if(char_valid(data.datum, spc=false, kor=false)){
-                if(data.datum.length >= 5 && data.datum.length < 13){
-                    valid = true;
+            if(!!data[datum]){
+                if(data[datum].length > 4 && data[datum].length < 13){
+                    if(char_valid(data[datum])){
+                        continue;
+                    }else{
+                        valid = false;
+                        msg = "ID에는 영어와 숫자로 구성해야 합니다."
+                        break;
+                    };
                 }else{
-                    msg = "ID는 최소 5자 이상 12자 이하입니다.";
+                    valid = false;
+                    msg = "ID의 길이는 5~12자이어야 합니다.";
+                    break;
                 };
             }else{
-                msg = "ID에는 영어와 숫자만 사용이 가능합니다."
+                msg= "ID를 입력해주세요.";
+                break;
             };
         }else if(datum=='username'){
-            console.log("@@@@@@@@@@@@")
-            if(char_valid(data.datum)){
-                if(!data.datum.length){
-                    msg = "Username을 입력해주세요."
+            if(!!data[datum]){
+                if(data[datum].length > 3){
+                    if(char_valid(data[datum], spc=true, kor=true)){
+                        continue;
+                    }
                 }else{
-                    valid = true;
-                };
-            };
+                    valid = false;
+                    msg = "Username의 길이는 최소 4자 이상입니다.";
+                    break;
+                }
+            }else{
+                valid = false;
+                msg = "Username을 입력해주세요.";
+                break;
+            }
         }else if(datum=='password1'){
-            console.log("###########")
-            if(char_valid(data.datum, kor=false)){
-                if(data.datum.length >= 8){
-                    valid = true;
+            if(!!data[datum]){
+                if(data[datum].length > 7){
+                    if(char_valid(data[datum], spc=true)){
+                        continue;
+                    }else{
+                        valid = false;
+                        msg = "Password에는 영어, 숫자, 특수문자로 조합되어야 합니다.";
+                        break;
+                    };
                 }else{
-                    msg = "Password는 최소 8자 이상입니다."
+                    valid = false;
+                    msg = "Password의 길이는 최소 8자 이상입니다.";
+                    break;
                 };
             }else{
-                msg = "Password에는 한글을 사용할 수 없습니다."
+                valid = false;
+                msg = "Password를 입력해주세요.";
+                break;
             };
         }else{
-            console.log("$$$$$$$$$$$$$")
-            if(data.datum == data['password2']){
-                valid = true;
+            if(!!data[datum]){
+                if(data[datum] == data.password1){
+                    continue;
+                }else{
+                    valid = false;
+                    msg = "Password1과 Password2가 다릅니다.";
+                    break;
+                };
             }else{
-                msg = "Password가 같지 않습니다."
+                valid = false;
+                msg = "Password2를 입력해주세요.";
+                break;
             };
         };
     };
