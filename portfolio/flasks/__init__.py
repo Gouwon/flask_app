@@ -7,6 +7,9 @@ from . import routers
 from . import auth
 app.register_blueprint(auth.bp)
 
+from . import board
+app.register_blueprint(board.bp)
+
 from . import init_db
 
 

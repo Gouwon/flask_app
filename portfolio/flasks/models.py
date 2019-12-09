@@ -8,7 +8,7 @@ class User(Base):
     username = Column(String(255))
     password = Column(String(256))
 
-    def __init__(self, username='guest', userid='0', password='', maeke_sha=False):
+    def __init__(self, username='guest', userid='0', password='', make_sha=False):
         self.username = username
         self.userid = userid
         self.password = func.sha2(password, 256) if make_sha else password
@@ -18,3 +18,21 @@ class User(Base):
 
     def _jsonify(self):
         return {"username" : self.username, "userid" : self.userid}
+    
+class Post(Base):
+    __tablename__ = 'Posts'
+    id = Column(Integer, primary_key=True)
+    head = Column(String(1024))
+    content = Column(String(4048))
+    author = Column(String(128))
+
+    def __init__(self, head, content, author):
+        self.head = head
+        self.content = content
+        self.author = author
+
+    def __repr__(self):
+        return '<Post %s by %s>' % (self.head, self.author)
+
+    def _jsonify(self):
+        return {"head" : self.head, "content" : self.content, "author" : self.author}
