@@ -6,4 +6,52 @@
 
 {% block body %}
 <p>this is board.html</p>
+<form style="display: none;" action="/board/getbd" method="get"><button type="submit" id="b"></button></form>
+<div id="result" name="result"></div>
 {% endblock body %}
+
+{% block script %}
+<script>
+window.onload = function(){
+    // document.getElementById('b').click();
+    var requestURL = '/board/getbd';
+    var request = new XMLHttpRequest();
+    request.open('GET', requestURL);
+    request.responseType = 'json';
+    request.send();
+
+    request.onload = function() {
+        var req = request.response;
+        
+        console.log(">>>>> req", req['data'])
+
+        for(var index in req['data']){
+            var titleData = req['data'][index]['head'];
+            var title = document.createElement('h3');
+            title.innerText = titleData;
+            
+            var contentData = req['data'][index]['content'];
+            var content = createTag(contentData);
+
+            document.getElementById('result').appendChild(title);
+            document.getElementById('result').appendChild(content);
+            
+            // document.getElementById('result').insertAdjacentElement("beforeend", el)
+        }
+    }
+}
+
+function createTag(str){
+    var regExp = />/;
+    var regExp1 = />(.*)</;
+    var i = str.search(regExp);
+    var tagName = str.substr(1, i-1);
+    var tag = document.createElement(tagName);
+    var txt = str.match(regExp1);
+    tag.innerHTML = txt[1];
+
+    return tag;
+}
+
+</script>
+{% endblock script %}

@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, func
+from sqlalchemy import Column, Integer, String, func, DateTime
 from .init_db import Base, db_session
 
 class User(Base):
@@ -25,6 +25,7 @@ class Post(Base):
     head = Column(String(1024))
     content = Column(String(4048))
     author = Column(String(128))
+    registdt = Column(DateTime)
 
     def __init__(self, head, content, author):
         self.head = head
