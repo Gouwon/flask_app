@@ -20,6 +20,7 @@ def register():
             key = rq
             value = request.form.get(rq)
             data[key] = value
+        
         pprint(data)
         
         user = User(username=data["username"], userid=data["userid"], password=data["password1"], make_sha=True)

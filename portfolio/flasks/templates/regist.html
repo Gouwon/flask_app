@@ -16,6 +16,8 @@
     <label for="password2">Password2</label>
     <input type="password" name="password2" id="password2" autocomplete="current-password">    
     <button>Submit</button>
+
+    <!-- <font style='font-size:11px; font-weight:bold; color:#BF4C00;'>비밀번호는 영문, 숫자, 혹은 !@#$%^&*()?로 이루어져야 합니다.</font> -->
 </form>
 {% endblock body %}
 
@@ -24,9 +26,10 @@
     
 function gw(){
     if(!!check_form()){
-        return true
+        return true;
     }
-    return false
+
+    return false;
 }
 
 function char_valid(str , spc = false, kor = false){
@@ -38,20 +41,53 @@ function char_valid(str , spc = false, kor = false){
     if(!spc && !kor){   //  특수문자, 한글이 없어야 함.
         if(check_num.test(str) && check_eng.test(str) && !check_spc.test(str) && !check_kor.test(str)){
             return true;
-        };
+        }
     }else if(!spc && kor){  // 특수문자는 없고, 한글은 있어도 됨.
         if(check_num.test(str) && check_eng.test(str) && !check_spc.test(str)){
             return true;
-        };
+        }
     }else if(spc && !kor){  // 특수문자도 되고, 한글은 없어야 함. for 패스워드
         if(check_num.test(str) && check_eng.test(str) && check_spc.test(str) && !check_kor.test(str)){
             return true;
-        };
+        }
     }else{  // 특수문자, 한글가 있어도 됨.
         if(check_num.test(str) && check_eng.test(str)){
             return true;
-        };
-    };
+        }
+    }
+
+    return false;
+}
+
+function check_password(str){
+    function check_sameness(str){
+        for(var i=1;i<str.length-1;i++){
+            if(str.charCodeAt(i-1)===str.charCodeAt(i) && str.charCodeAt(i)===str.charCodeAt(i+1)){
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    function check_continuity(str){
+        for(var i=1; i<str.length-1;i++){
+            var right = str.charCodeAt(i-1);
+            var center = str.charCodeAt(i);
+            var left = str.charCodeAt(i+1);
+
+            if((right+1)===center && center===(left-1)){    // ascending
+                return false;
+            }else if((right-1)===center && center===(left+1)){  // descending
+                return false;
+            }
+        }
+        return true;
+    }
+
+    if(check_continuity(str) && check_sameness(str)){
+        return true;
+    }
 
     return false;
 }
@@ -63,7 +99,7 @@ function check_form(){
                 'password2' : document.getElementById('password2').value
     };
     var msg;
-    var valid = true;
+    var valid = false;
 
     for(var datum in data){
         if(datum=='userid'){
@@ -72,12 +108,10 @@ function check_form(){
                     if(char_valid(data[datum])){
                         continue;
                     }else{
-                        valid = false;
                         msg = "ID에는 영어와 숫자로 구성해야 합니다."
                         break;
                     };
                 }else{
-                    valid = false;
                     msg = "ID의 길이는 5~12자이어야 합니다.";
                     break;
                 };
@@ -92,58 +126,55 @@ function check_form(){
                         continue;
                     }
                 }else{
-                    valid = false;
                     msg = "Username의 길이는 최소 4자 이상입니다.";
                     break;
                 }
             }else{
-                valid = false;
                 msg = "Username을 입력해주세요.";
                 break;
             }
         }else if(datum=='password1'){
             if(!!data[datum]){
                 if(data[datum].length > 7){
-                    if(char_valid(data[datum], spc=true)){
+                    if(char_valid(data[datum], spc=true) && check_password(data[datum])){
                         continue;
+                    }else if(char_valid(data[datum], spc=true) && !check_password(data[datum])){
+                        msg = "Password에는 연속된 문자(숫자), 연속해서 동일한 문자(숫자) 3번 사용할 수 없습니다."
+                        break;
                     }else{
-                        valid = false;
                         msg = "Password에는 영어, 숫자, 특수문자로 조합되어야 합니다.";
                         break;
-                    };
+                    }
                 }else{
-                    valid = false;
                     msg = "Password의 길이는 최소 8자 이상입니다.";
                     break;
-                };
+                }
             }else{
-                valid = false;
                 msg = "Password를 입력해주세요.";
                 break;
-            };
+            }
         }else{
             if(!!data[datum]){
-                if(data[datum] == data.password1){
-                    continue;
+                if(data[datum] == data['password1']){
+                    valid = true;
+                    break;
                 }else{
-                    valid = false;
                     msg = "Password1과 Password2가 다릅니다.";
                     break;
-                };
+                }
             }else{
-                valid = false;
                 msg = "Password2를 입력해주세요.";
                 break;
-            };
-        };
-    };
+            }
+        }
+    }
 
     if(!valid){
         alert(msg);
         return valid;
     }else{
         return valid;
-    };
+    }
 }
 </script>
 {% endblock script %}
