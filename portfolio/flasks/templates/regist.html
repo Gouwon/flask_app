@@ -14,7 +14,39 @@
     <label for="password1">Password1</label>
     <input type="password" name="password1" id="password1" autocomplete="current-password">
     <label for="password2">Password2</label>
-    <input type="password" name="password2" id="password2" autocomplete="current-password">    
+    <input type="password" name="password2" id="password2" autocomplete="current-password">
+    <label for="birth">생년월일</label>
+    <div id="birth">
+        <input type="text" name="birthyear" id="birthyear" placeholder="년(4자)">
+        <select name="birthmonth" id="birthmonth">
+            {% for i in range(0, 13) %}
+            <option value="{{i}}">
+                {% if i == 0 %}
+                월
+                {% else %}
+                {{i}}
+                {% endif %}
+            </option>
+            {% endfor %}
+        </select>
+        <input type="text" id="birthdate" placeholder="일">
+    </div>
+    <label for="gender">성별</label>
+    <select name="gender" id="gender">
+        <option value="M">남자</option>
+        <option value="F">여자</option>
+    </select>
+    <label for="mail"></label>
+    <input type="email" name="mail" id="mail">
+    <label for="phone">휴대전화</label>
+    <div id="phone">
+        <select name="countrycode" id="countrycode">
+            <option value="82">대한민국 +82</option>
+        </select>
+        <input type="text" name="phoneNumber" id="phoneNumber">
+        <input type="button" value="인증">
+        <input type="text" name="authnum" id="authnum" placeholder="인증번호를 입력하세요.">
+    </div>
     <button>Submit</button>
 
     <!-- <font style='font-size:11px; font-weight:bold; color:#BF4C00;'>비밀번호는 영문, 숫자, 혹은 !@#$%^&*()?로 이루어져야 합니다.</font> -->
