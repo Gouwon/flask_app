@@ -1,353 +1,48 @@
+{% extends 'base.html' %}
 
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-	<meta charset="UTF-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
-	<title>네이버 : 로그인</title>
-	<link rel="stylesheet" type="text/css" href="/login/css/global/desktop/w_20191002.css">
-</head>
-<body class="chrome">
-<div id="wrap">
-    <div id="u_skip">
-        <a href="#content" onclick="document.getElementById('content').tabIndex=-1;document.getElementById('content').focus();return false;"><span>본문으로 바로가기</span></a>
-    </div>
-	<!-- header -->
-	<div id="header">
-		<h1><a href="http://www.naver.com" class="sp h_logo" onclick="nclks('log.naver',this,event)"><span class="blind">NAVER</span></a></h1>
-		<div class="lang">
-			<select id="locale_switch" name="locale_switch" title="언어선택" class="sel" onchange="switchlocale();nclks_select(this.value,'',{'ko_KR':'log.lankr','en_US':'log.lanen','zh-Hans_CN':'log.lancn','zh-Hant_TW':'log.lantw'},this,event);">
-				<option value="ko_KR" >한국어</option>
-				<option value="en_US" >English</option>
-				<option value="zh-Hans_CN" >中文(简体)</option>
-				<option value="zh-Hant_TW" >中文(台灣)</option>
-			</select>
-		</div>
-	</div>
-	<!-- //header -->
-	<!-- container -->
-	<div id="container">
-		<!-- content -->
-		<div id="content">
-			<div class="title" aria-live="assertive">
-				<p></p>
-			</div>
-				<form id="frmNIDLogin" name="frmNIDLogin" target="_top" AUTOCOMPLETE="off" action="/auth/regist" method="POST" onsubmit="return confirmSplitSubmit();">
-				<input type="hidden" id="localechange" name="localechange" value="">
-				<input type="hidden" name="encpw" id="encpw" value="">
-<input type="hidden" name="enctp" id="enctp" value="1">
-<input type="hidden" name="svctype" id="svctype" value="1">
-<input type="hidden" name="smart_LEVEL" id="smart_LEVEL" value="1">
-<input type="hidden" name="bvsd" id="bvsd" value="">
-<input type="hidden" name="encnm" id="encnm" value="">
-<input type="hidden" name="locale" id="locale" value="ko_KR">
-<input type="hidden" name="url" id="url" value="https://nid.naver.com/user2/help/myInfo.nhn?menu=home">
+{% block body %}
+<form action="/board/1" method="get"><button type="submit" value="s"></button></form>
 
-				<fieldset class="login_form">
-					<legend class="blind">로그인</legend>
-					<div class="id_area">
-						<div class="input_row" id="id_area">
-							<span class="input_box">
-								<label for="id" id="label_id_area" class="lbl">아이디</label>
-								<input type="text" id="id" name="id" accesskey="L" placeholder="아이디" class="int" maxlength="41" value="">
-							</span>
-							<button type="button" disabled="" title="delete" id="id_clear" class="wrg">삭제</button>
-						</div>
-						<div class="error" id="err_empty_id" style="display:none" aria-live="assertive"></div>
-					</div>
-					<div class="pw_area">
-						<div class="input_row" id="pw_area">
-							<span class="input_box">
-								<label for="pw" id="label_pw_area"  class="lbl">비밀번호</label>
-								<input type="password" id="pw" name="pw" placeholder="비밀번호" class="int" maxlength="16" onkeypress="capslockevt(event);getKeysv2();" onkeyup="checkShiftUp(event);" onkeydown="checkShiftDown(event);">
-							</span>
-							<button type="button" disabled="" title="delete" id="pw_clear" class="wrg">삭제</button>
-							<div class="ly_v2" id="err_capslock" style="display:none;">
-								<div class="ly_box">
-									<p><strong>Caps Lock</strong>이 켜져 있습니다.</p>
-								</div>
-								<span class="sp ly_point"></span>
-							</div>
-						</div>
-						<div class="error" id="err_empty_pw" style="display:none" aria-live="assertive"></div>
-					</div>
+<form action="/board/1" method="post">
+    <input type="text" name="head" id="head" value="글1입니다.">
+    <input type="text" name="content" id="content" value="&lt;p>글1의 본문이 수정되었습니다.&lt;/p>">
+    <button type="submit" value="s">post</button>
+</form>
+<p id="result"></p>
+<button onclick="return gw()">ssss</button>
+{% endblock body %}
 
-					<input type="submit" title="로그인" alt="로그인" value="로그인" class="btn_global" onclick="nclks('log.login',this,event)">
-					<div class="check_info">
-						<div class="login_check">
-							<span class="login_check_box">
-								<input type="checkbox" id="login_chk" name="nvlong" class=""  value="off" onchange="savedLong(this);nclks_chk('login_chk', 'log.keepon', 'log.keepoff',this,event)" />
-								<label for="login_chk" id="label_login_chk" class="sp ">로그인 상태 유지</label>
-							</span>
-							<div class="ly_v2" id="persist_usage" style="display:none;">
-								<div class="ly_box">
-									<p>개인정보 보호를 위해 <strong>개인 PC에서만 사용하세요.</strong>&nbsp;&nbsp; &nbsp;&nbsp;<a href="https://help.naver.com/support/contents/contents.nhn?serviceNo=532&categoryNo=1523" target="_blank" class="sp btn_check_help">도움말보기</a></p>
-								</div>
-								<span class="sp ly_point"></span>
-							</div>
-						</div>
-						<div class="pc_check">
-							<span class="ip_check">
-								<a href="/login/ext/help_ip3.html" target="_blank" onclick="window.open(this.href, 'IPGUIDE', 'titlebar=1, resizable=1, scrollbars=yes, width=537, height=750'); return false;" title="" >IP보안</a>
-								<span class="ip_ch">
-									<input type="checkbox" id="ip_on" value="off" onchange="ipCheck(this,event);nclks_chk('ip_on', 'log.iponset', 'log.ipoffset',this,event)" class=""/>
-									<label for="ip_on" id="label_ip_on" class="sp "><span class="blind">on</span></label>
-								</span>
-							</span>
-							<span class="bar">|</span>
-							<div class="dis_di">
-								<a href="#" onclick="onetime(); nclks('log.otn',this,event); return false;" title="일회용 로그인">일회용 로그인</a><a href="javascript:viewOnetime();" onclick="nclks('log.otnhelp',this,event)" title="도움말" class="btn_help_cover"><span class="sp btn_help"></span><span class="blind">도움말</span></a>
-								<div class="ly" id="onetime_usage" style="display:none;" onclick="javascript:viewOnetime()">
-									<div class="ly_box">
-										<p>네이버앱에서 생성된 일회용 로그인 번호를 입력하면, 앱에 로그인된 계정으로 PC에서 로그인할 수 있어요. 아이디/비밀번호를 입력하지 않아 간편하고 더욱 안전합니다.</p>
-									</div>
-									<span class="sp ly_point"></span>
-								</div>
-							</div>
-						</div>
-					</div>
-				</fieldset>
-			</form>
-			<div class="position_a">
-				<div class="find_info">
-					<a target="_blank" id="idinquiry" href="https://nid.naver.com/user2/api/route.nhn?m=routeIdInquiry&lang=ko_KR">아이디 찾기</a> <span class="bar" aria-hidden="true">|</span> <a target="_blank" id="pwinquiry" href="https://nid.naver.com/user2/api/route.nhn?m=routePwInquiry&lang=ko_KR">비밀번호 찾기</a> <span class="bar" aria-hidden="true">|</span> <a target="_blank" id="join" href="https://nid.naver.com/user2/V2Join.nhn?m=agree&lang=ko_KR">회원가입</a>
-				</div>
-			</div>
-			<a href="https://nid.naver.com/user2/campaign/showInfo.nhn?m=showBannerCampaign" target="_blank" class="naversign_banner">
-				<span class="bill_img_pc"></span>
-				<span class="blind">
-					<strong>네이버 고지서</strong>
-					지방세! 터치 한번으로 확인하고 납부하세요.
-				</span>
-			</a>
-		</div>
-		<!-- //content -->
-	</div>
-	<!-- //container -->
-	<!-- footer -->
-	<div id="footer">
-		<ul>
-		<li><a target="_blank" href="http://www.naver.com/rules/service.html" onclick="nclks('fot.agreement',this,event)">이용약관</a></li>
-		<li><strong><a target="_blank" href="http://www.naver.com/rules/privacy.html" onclick="nclks('fot.privacy',this,event)">개인정보처리방침</a></strong></li>
-		<li><a target="_blank" href="http://www.naver.com/rules/disclaimer.html" onclick="nclks('fot.disclaimer',this,event)">책임의 한계와 법적고지</a></li>
-		<li><a target="_blank" href="https://help.naver.com/support/service/main.nhn?serviceNo=532" onclick="nclks('fot.help',this,event)">회원정보 고객센터</a></li>
-		</ul>
-		<address><em><a target="_blank" href="http://www.navercorp.com" class="logo" onclick="nclks('fot.naver',this,event)"><span class="blind">naver</span></a></em><em class="copy">Copyright</em> <em class="u_cri">&copy;</em> <a target="_blank" href="http://www.navercorp.com" class="u_cra"  onclick="nclks('fot.navercorp',this,event)">NAVER Corp.</a> <span class="all_r">All Rights Reserved.</span></address>	
-	</div>
-	<!-- //footer -->
-</div>
-<script type="text/javascript" src="/login/js/common.all.js?141216"> </script>
-<script type="text/javascript">
-var session_keys = "";
-var pc_keyboard_close="<span class=\"sp\">PC 키보드 닫기</span>";
-var pc_keyboard_open="<span class=\"sp\">PC 키보드 보기</span>";
-var view_char="한글 보기";
-var view_symbol="특수기호 보기";
+{% block script %}
+<script>
+function gw(){
+    var data = { "haed" : document.getElementById('head').value,
+                "content" : document.getElementById('content').value };
+    data = JSON.stringify(data);
+    _ajax(url='/board/1', data, 'POST', document.re)
+}
 
-addInputEvent('id', 'id_area');
-addInputEvent('pw', 'pw_area');
-initSmartLevel();
-var login_chk = $('login_chk');
-if(login_chk.attachEvent) {
-	login_chk.attachEvent("onchange", function(){persist_usage();});
-} else if (login_chk.addEventListener) {
-	login_chk.addEventListener("change", function(){persist_usage();}, false);
-}
-function isOldIE()
-{
-	try{
-		var agent = window.navigator.userAgent;
-		if(agent.indexOf("MSIE 8")!= -1 || agent.indexOf("MSIE 7")!= -1 ) {
-			login_chk.attachEvent("onclick", function(){msieblur(login_chk);});
-		}
-		if(agent.indexOf("MSIE ")!= -1 || agent.indexOf("rv:11.0")!= -1){
-			$("locale_switch").style.backgroundImage="none";
-		}
-	}catch(e) {}
-}
-isOldIE();
-function persist_usage()
-{
-	var login_chk = $("login_chk");
-	if (login_chk.checked==true)
-	{
-		show("persist_usage");
-		hide('onetime_usage');
-		view_onetimeusage = false;
-	}
-	else
-	{
-		hide("persist_usage");
-	}
-}
-var view_onetimeusage = false;
-function viewOnetime()
-{
-	if (view_onetimeusage)
-	{
-		hide('onetime_usage');
-		view_onetimeusage = false;
-	}
-	else
-	{
-		hide("persist_usage");
-		show('onetime_usage');
-		view_onetimeusage = true;
-	}
-}
-try{
-	if (navigator.appVersion.toLowerCase().indexOf("win") != -1) {
-		$('id').style.imeMode = "disabled";
-		document.msCapsLockWarningOff = true;
-	}
-}catch(e) {}
-try{
-	if ( $('id').value.length == 0 )
-	{
-		$('id').focus();
-	}
-	else
-	{
-		$('pw').focus();
-	}
-}catch (e){}
-function selectItemByValue(elmnt, value){
-	isSet = false;
-	for(var i=0; i < elmnt.options.length; i++)
-	{
-		if(elmnt.options[i].value === value) {
-			elmnt.selectedIndex = i;
-			isSet = true;
-			break;
-		}
-	}
-	if (!isSet)
-		elmnt.selectedIndex=1;
-}
-try {
-selectItemByValue(locale_switch, 'ko_KR');
-}catch (e){}
-var id_error_msg="아이디를 입력해주세요.";
-var pw_error_msg="비밀번호를 입력해주세요.";
-var inSubmitProgress = false;
-function confirmSplitSubmit()
-{
-        if (inSubmitProgress) {
-                return false;
+function _ajax(url, data, method='GET', fn=null){
+    (function (){
+        var req = new XMLHttpRequest();
+        console.log("&&&&&&&&&&&& ", this, req)
+        req.open(method, url);
+        console.log(">>>>>> outer this", this, req)
+        req.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+        req.onreadystatechange = function () { 
+            console.log("%%%%%%%%%%% ", this, req);
+            if (req.readyState === 4 && req.status === 200) { 
+                      result.innerText = this.responseText; 
+                      console.log(">>>>>> this", this, req);
+            } 
+        }; 
+
+        console.log("333333333333 ", this, req)
+        req.send(data);
+        console.log("$$$$$$$$$$$$ ", this, req)
+        if(fn != null && this.state == 200){
+            fn;
         }
-        inSubmitProgress = true;
-        var id = $("id");
-        var pw = $("pw");
-        var encpw = $("encpw");
-        
-        if(id.value == "") {
-                show("err_empty_id");
-                $("err_empty_id").innerHTML=id_error_msg;
-                hide("err_empty_pw");
-                $("err_empty_pw").innerHTML="";
-                hide("err_common_pw1");
-                hide("err_common");
-                id.focus();
-                inSubmitProgress = false;
-                return false;
-        } else if(pw.value == "") {
-                show("err_empty_pw");
-                $("err_empty_pw").innerHTML=pw_error_msg;
-                hide("err_empty_id");
-                $("err_empty_id").innerHTML="";
-                hide("err_common_pw1");
-                hide("err_common");
-                pw.focus();
-                inSubmitProgress = false;
-                return false;
-        }
-        try{
-                $("ls").value = localStorage.getItem("nid_t");
-        }catch(e){}
-        return encryptIdPwSplit();
-}
-function encryptIdPwSplit() {
-        var id = $("id");
-        var pw = $("pw");
-        var encpw = $("encpw");
-        var rsa = new RSAKey;
-
-        if (keySplit(session_keys)) {
-                rsa.setPublic(evalue, nvalue);
-                try{
-                        encpw.value = rsa.encrypt(
-                                getLenChar(sessionkey) + sessionkey +
-                                getLenChar(id.value) + id.value +
-                                getLenChar(pw.value) + pw.value);
-                } catch(e) {
-                        inSubmitProgress = false;
-                        return false;
-                }
-                $('enctp').value = 1;
-
-                setTimeout(function() {
-                        $("id").value = "";
-                        $("pw").value = "";
-                        $("bvsd").value = "timeout";
-                        $('frmNIDLogin').submit();
-                }, 5000);
-                try {
-                        if (bvsd){
-                                bvsd.f(function(a) {
-                                        $("id").value = "";
-                                        $("pw").value = "";
-                                        $("bvsd").value = a;
-                                        $('frmNIDLogin').submit();
-                                });
-                        }
-                } catch (e) {
-                        $("id").value = "";
-                        $("pw").value = "";
-                        $("bvsd").value = "error1|"+e.name+"|"+e.message;;
-                        $('frmNIDLogin').submit();
-                }
-        }
-        else
-        {
-                getKeyByRuntimeIncludeSplit();
-        }
-        inSubmitProgress = false;
-        return false;
-}
-function getKeyByRuntimeIncludeSplit() {
-        try {
-                var keyjs  = document.createElement('script');
-                keyjs.type = 'text/javascript';
-                keyjs.src = '/login/ext/keys_js3.nhn';
-                document.getElementsByTagName('head')[0].appendChild(keyjs);
-        } catch (e) {
-        }
+    })();
 }
 </script>
-<script type="text/javascript" src="/login/js/bvsd.1.3.4.min.js"></script>
-<script type="text/javascript">
-var porperties = {
-	keyboard: [{
-		id: "id"
-	}, {
-		id: "pw",
-		secureMode: true
-	}],
-	modeProperties: {
-		mode: 4
-	}
-};
-bvsd = new sofa.Koop(porperties);
-
-
-</script>
-<script type="text/javascript" src="https://nid.naver.com/login/js/lcs_nclicks.js?dt=20190122"></script>
-<script type="text/javascript"> 
-lcs_do(); 
-var g_ssc = "nid.login_kr";
-var ccsrv = "cc.naver.com";
-</script>
-<div id="nv_stat" style="display:none;">20</div>
-</body>
-</html>
+{% endblock script %}

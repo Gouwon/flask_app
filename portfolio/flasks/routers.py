@@ -8,6 +8,5 @@ def root():
 @app.route('/test', methods=['GET', 'POST'])
 @app.route('/test/<int:post_no>')
 def test(post_no=0):
-    print(method)
     print(request.args.get('method'))
-    return render_template('post.html')
+    return render_template('test.html')

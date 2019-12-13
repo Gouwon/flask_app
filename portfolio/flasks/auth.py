@@ -12,7 +12,7 @@ from pprint import pprint
 bp = Blueprint('auth', __name__, url_prefix='/auth')
 
 
-@bp.route('/regist', methods=['GET', 'POST'])
+@bp.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
         data = {}
@@ -30,7 +30,7 @@ def register():
         except SQLAlchemyError as sqlerr:
             db_session.rollback()
         return redirect(url_for('auth.login'))
-    return render_template('regist.html')
+    return render_template('register.html')
 
 @bp.route('/login', methods=['GET', 'POST'])
 def login():
