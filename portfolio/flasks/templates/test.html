@@ -3,45 +3,46 @@
 {% block body %}
 <form action="/board/1" method="get"><button type="submit" value="s"></button></form>
 
-<form action="/board/1" method="post">
+<form>
     <input type="text" name="head" id="head" value="글1입니다.">
     <input type="text" name="content" id="content" value="&lt;p>글1의 본문이 수정되었습니다.&lt;/p>">
-    <button type="submit" value="s">post</button>
+    <button value="s" onclick="return gw()">post</button>
 </form>
 <p id="result"></p>
 <button onclick="return gw()">ssss</button>
+
+<button onclick="_ajax('/board/3', data=null, 'DELETE');"></button>
 {% endblock body %}
 
 {% block script %}
 <script>
 function gw(){
-    var data = { "haed" : document.getElementById('head').value,
+    var data = { "head" : document.getElementById('head').value,
                 "content" : document.getElementById('content').value };
-    data = JSON.stringify(data);
-    _ajax(url='/board/1', data, 'POST', document.re)
+    
+    _ajax(url='/board/1', data, 'POST', function(res) {
+        console.log("===================>>>>>> res ", res);
+    });
 }
 
-function _ajax(url, data, method='GET', fn=null){
-    (function (){
+function _ajax(url, data, method='GET', fn, dataType="application/json"){
+    (function (){   // IIFE
         var req = new XMLHttpRequest();
-        console.log("&&&&&&&&&&&& ", this, req)
         req.open(method, url);
-        console.log(">>>>>> outer this", this, req)
         req.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
         req.onreadystatechange = function () { 
-            console.log("%%%%%%%%%%% ", this, req);
             if (req.readyState === 4 && req.status === 200) { 
-                      result.innerText = this.responseText; 
-                      console.log(">>>>>> this", this, req);
+                result.innerText = this.responseText; 
+                if(!!fn){
+                    fn(this.response);
+                }
             } 
         }; 
 
-        console.log("333333333333 ", this, req)
-        req.send(data);
-        console.log("$$$$$$$$$$$$ ", this, req)
-        if(fn != null && this.state == 200){
-            fn;
+        if(dataType=="application/json"){
+            data = JSON.stringify(data);
         }
+        req.send(data);
     })();
 }
 </script>
