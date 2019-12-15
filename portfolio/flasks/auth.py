@@ -45,6 +45,7 @@ def login():
         user = User.query.filter(User.userid=='abc@efg.com', User.password=='a').first()
         if(user is not None):
             session['loginUser'] = user._jsonify()
+            session['loginUser']['id'] = user.id    # user index를 클라이언트에 안 주기 위해서....
             res = jsonify(user._jsonify())
         return render_template('login.html', result="not found") if (user is None) else res
     return render_template('login.html')

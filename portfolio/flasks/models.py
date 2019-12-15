@@ -1,6 +1,7 @@
 from sqlalchemy import Column, Integer, String, func, DateTime
 from .init_db import Base, db_session
 
+
 class User(Base):
     __tablename__ = 'Users'
     id = Column(Integer, primary_key=True)

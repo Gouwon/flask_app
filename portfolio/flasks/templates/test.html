@@ -1,6 +1,11 @@
 {% extends 'base.html' %}
 
+{% block test %}
+<title>Test</title>
+{% endblock test %}
+
 {% block body %}
+<p>This is test.html</p>
 <form action="/board/1" method="get"><button type="submit" value="s"></button></form>
 
 <form>
@@ -9,9 +14,16 @@
     <button value="s" onclick="return gw()">post</button>
 </form>
 <p id="result"></p>
-<button onclick="return gw()">ssss</button>
-
-<button onclick="_ajax('/board/3', data=null, 'DELETE');"></button>
+<button onclick="_ajax('/board/', data={'head':'새로운 글4입니다.', 'content' : '새로운 글4의 내용입니다.'}, 'POST', function (res){ console.log('=====> res ' + res);
+console.log('======= res[result] ', typeof(res))
+if(res['result']=='로그인이 필요합니다.'){
+    alert('로그인이 필요합니다.');
+    window.location='http://localhost:5000/auth/login';
+}
+});
+">CREATE</button>
+<button onclick="return gw()">UPDATE</button>
+<button onclick="_ajax('/board/3', data=null, 'DELETE');">DELETE</button>
 {% endblock body %}
 
 {% block script %}
