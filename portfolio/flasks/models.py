@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, func, DateTime
+from sqlalchemy import Column, Integer, String, func, DateTime, func
 from .init_db import Base, db_session
 
 
@@ -26,7 +26,7 @@ class Post(Base):
     head = Column(String(1024))
     content = Column(String(4048))
     author = Column(String(128))
-    registdt = Column(DateTime)
+    registdt = Column(DateTime, default=func.utc_timestamp())
 
     def __init__(self, head, content, author):
         self.head = head

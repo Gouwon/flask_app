@@ -3,7 +3,7 @@ from flask import render_template, request
 
 @app.route('/')
 def root():
-    return 'this is root.'
+    return render_template('base.html')
 
 @app.route('/test', methods=['GET', 'POST'])
 @app.route('/test/<int:post_no>')
