@@ -5,5 +5,8 @@
 {% endblock title%}
 
 {% block body %}
-<p>This is board.html</p>
+<p>This is board.html
+    {{ rs | striptags }}
+    {{ rs }}
+</p>
 {% endblock body %}

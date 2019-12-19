@@ -27,11 +27,19 @@ class Post(Base):
     content = Column(String(4048))
     author = Column(String(128))
     registdt = Column(DateTime, default=func.utc_timestamp())
+    updatedt = Column(Datetime)
 
     def __init__(self, head, content, author):
         self.head = head
         self.content = content
         self.author = author
+    
+    def getupdatedt(self):
+        return self.updatedt
+    
+    def setupdatedt(self):
+        self.updatedt = func.utc_timestamp()
+        return self.getupdatedt() 
 
     def __repr__(self):
         return '<Post %s by %s>' % (self.head, self.author)
