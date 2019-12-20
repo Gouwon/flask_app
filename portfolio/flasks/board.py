@@ -49,16 +49,27 @@ def board_read():
     # return posts
     return "OK"
 
-@bp.route('/post_write')
-@bp.route('/post_write/<str:method>/<int:postno>')
-def post_write(method='GET', postno=None):
-    if method != "GET":
-        post = url_for("post_read", postno)
-    # escape 문제 해결해야 함.
-    result = { "result" : post }
-    return render_template('write.html', result=result)
+@bp.route('/post_read/<int:postno>')
+def post_read(postno):
+    post = Post.query.filter(Post.id == postno).first()
+    if post is None:
+        return { "result" : "not Found" }
+    return post._jsonify()
 
-@bp.route('/post_create', method=['POST'])
+@bp.route('/post', strict_slashes=False)
+@bp.route('/post/<int:postno>')
+def post_write(method='GET', postno=None):
+    print(">>>>>>>>>>>>>> user ", session['loginUser'])
+    print(">>>>>>>>>>>>>> postno ", postno)
+    if postno is not None:
+        post = post_read(postno)
+        # if post.author != session['loginUser']:
+        #     return x
+        response_data = { "result" : post }
+        return render_template('write.html', result=response_data)
+    return render_template('write.html')
+
+@bp.route('/post_create', methods=['POST'])
 @_jsonify
 def post_create():
     # data = request.args.to_dict(flat=False) param
@@ -77,15 +88,7 @@ def post_create():
         msg = "failed"
     return { "result" : msg }
 
-@bp.route('/post_read/<int:postno>')
-@_jsonify
-def post_read(postno):
-    post = Post.query.filter(Post.id == postno).first()
-    if post in None:
-        return { "result" : "not Found" }
-    return post
-
-@bp.route('/post_update/<int:postno>')
+@bp.route('/post_update/<int:postno>', methods=['POST'])
 @_jsonify
 def post_update():
     post = url_for('post_read', postno)
@@ -105,7 +108,7 @@ def post_update():
         msg = "failed"    
     return { "result" : msg } 
 
-@bp.route('/post_delete/<int:postno>')
+@bp.route('/post_delete/<int:postno>', methods=['POST'])
 @_jsonify
 def post_delete():
     post = url_for('post_read', postno)

@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block title %}
+<title>Write</title>
+{% endblock title %}
+
+{% block body %}
+<p>This is Write.html</p>
+
+<form action="" id="texteditor" name="texteditor">
+    <label for="head">제목</label>
+    
+    {% if result %}
+        {% set i = result %}
+        {% if i.result %}
+        <input type="text" id="head" name="head" value="{{ result.result.head }}">
+        <textarea name="content" id="content" cols="30" rows="10">{{ result.result.content }}</textarea>
+        {% endif %}
+    {% else %}
+    <input type="text" id="head" name="head">
+    <textarea name="content" id="content" cols="30" rows="10"></textarea>
+    {% endif %}
+    <input type="button" value="post_create" name="post_create" onclick="gw(event)">
+    {% if result %}
+    <input type="button" value="post_update" name="post_update" onclick="gw(event)">
+    <input type="button" value="post_delete" name="post_delete" onclick="gw(event)">
+    {% endif %}
+</form>
+{% endblock body %}
+
+{% block script %}
+<script>
+function gw(event) {
+    console.log(">>>>>>>>>> event.target from  ", event.target.name);
+    console.log(">>>>>>>>>> event.srcElement from  ", event.srcElement.name);
+    console.log(">>>>>>>>>> event.currentTarget from  ", event.currentTarget.name);
+}
+</script>
+{% endblock script %}

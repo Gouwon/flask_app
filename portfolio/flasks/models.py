@@ -27,7 +27,7 @@ class Post(Base):
     content = Column(String(4048))
     author = Column(String(128))
     registdt = Column(DateTime, default=func.utc_timestamp())
-    updatedt = Column(Datetime)
+    updatedt = Column(DateTime)
 
     def __init__(self, head, content, author):
         self.head = head
