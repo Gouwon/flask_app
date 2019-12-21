@@ -4,7 +4,7 @@ from .models import User
 from .init_db import db_session
 from sqlalchemy import func
 
-from functools import wraps
+
 
 from pprint import pprint
 
@@ -33,7 +33,7 @@ def register():
     return render_template('register.html')
 
 @bp.route('/login', methods=['GET', 'POST'])
-def login():
+def login(next=None):
     if request.method == 'POST':
         data = {
             'id' : request.form.get('id'),
@@ -47,17 +47,14 @@ def login():
             session['loginUser'] = user._jsonify()
             session['loginUser']['id'] = user.id    # user index를 클라이언트에 안 주기 위해서....
             res = jsonify(user._jsonify())
-        return render_template('login.html', result="not found") if (user is None) else res
+        return render_template('login.html', result="not found") if (user is None) else url_for(next)
     return render_template('login.html')
+
+@bp.route('/logout', methods=['GET', 'POST'])
+def logout():
+    del(session)
+    return url_for('root')
 
 @bp.route('/help', methods=['GET', 'POST'])
 def help():
     return render_template('help.html')
-
-def login_required(f):
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        if session['loginUser'] is None:
-            return redirect(url_for('login', next=request.url))
-        return f(*args, **kwargs)
-    return decorated_function

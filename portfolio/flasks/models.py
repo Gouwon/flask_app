@@ -1,5 +1,6 @@
 from sqlalchemy import Column, Integer, String, func, DateTime, func
 from .init_db import Base, db_session
+import json
 
 
 class User(Base):
@@ -18,7 +19,7 @@ class User(Base):
         return '<User %r %r>' % (self.username, self.password)
 
     def _jsonify(self):
-        return {"username" : self.username, "userid" : self.userid}
+        return json.dums({"username" : self.username, "userid" : self.userid})
     
 class Post(Base):
     __tablename__ = 'Posts'
@@ -45,4 +46,7 @@ class Post(Base):
         return '<Post %s by %s>' % (self.head, self.author)
 
     def _jsonify(self):
+        return json.dumps({"head" : self.head, "content" : self.content, "author" : self.author}, ensure_ascii=False)
+    
+    def getJson(self):
         return {"head" : self.head, "content" : self.content, "author" : self.author}

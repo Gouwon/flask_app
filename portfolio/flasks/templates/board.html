@@ -5,8 +5,17 @@
 {% endblock title%}
 
 {% block body %}
-<p>This is board.html
-    {{ rs | striptags }}
-    {{ rs }}
-</p>
+<p>This is board.html</p>
+{% if result %}
+    {% set data = result.result %}
+    {% for datum in data %}
+        <div>
+            <dl>
+                <dt>제목 | {{ datum["head"] }}</dt>
+                <dd>{{ datum["content"] }}</dd>
+                <p>>>>>>{{ datum }}</p>
+            </dl>
+        </div>
+    {% endfor %}
+{% endif %}
 {% endblock body %}

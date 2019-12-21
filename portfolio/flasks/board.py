@@ -1,11 +1,11 @@
-from flask import Blueprint
-from flask import render_template, make_response, jsonify, request, session, redirect, url_for
+from flask import Blueprint, render_template, make_response, jsonify, request, session, redirect, url_for, Response
 from jinja2 import Markup
-from .utils import _jsonify
+from sqlalchemy import desc
 from .models import Post
 from .init_db import db_session
-from sqlalchemy import desc
 import json
+from .decorators import login_required, _jsonify
+from .utils import string_to_dict
 
 from pprint import pprint
 
@@ -13,41 +13,37 @@ from pprint import pprint
 bp = Blueprint('bd', __name__, url_prefix='/board')
 
 # board.html drwaing
-@bp.route('/')
-def draw_board():
-    rs = Markup("<h1>this is test for striptags filter in jinja</h1>")
-    r = { "rs" : rs }
-    # r = _jsonify(r)
-    return render_template('board.html', rs=r)
-
 # reading board
 @bp.route('/board_read')
-@_jsonify
+# @_jsonify
 def board_read():
     # QQQ 작업 필요....
     # 제목, 글쓴이, 순서(등록/수정), 태그, 내용, 조건검색(날짜, startday-endday, 포스트 검색 보여줄 결과 수)
     # if query param is none, select limit 50
+    ## 일단 paging...
     args  = request.args
     if len(args) == 0:
-        posts =  Post.query.filter().order_by(desc(Post.registdt)).limit(50)
+        posts =  Post.query.filter().order_by(desc(Post.registdt)).limit(10)
     
+    response_data = [post._jsonify() for post in posts]
+    result = { "result" : response_data, "b" : "DDD" , "ddd" : { "aaaa" : "ssss" }}
+    result = json.dumps(result, ensure_ascii=False)
     
-    print("?????? ", args)
-    print("args.items()args.items()args.items()args.items() ", args.items())
-    print(",,,,,,,,,,,,,,,,,,,,,", args.to_dict(False))
-    v = args.to_dict(flat=False)
-    print("%(s)s %(v)s %(c)s" % v, type(v))
+    response_data1 = [post.getJson() for post in posts]
+    result1 = { "result" : response_data1, "b" : "DDD" , "ddd" : { "aaaa" : "ssss" }}
+    result1 = json.dumps(result1, ensure_ascii=False)
 
-    for a in args.items():
-        print("/////// ", a)
+    return result1  ## string으로 결과가 client에 가게 될 것임. json.loads()를 하면 서버에서는 dict로 처리함. client에 json으로 보내려면 jsonify()를 시켜줘야 함. 아니면 client에서 jsonify를 실행.. the JSON object must be str, bytes or bytearray, not dict
+    # return result2
 
+@bp.route('/')
+def draw_board():
+    result = board_read()
+    result = json.loads(result, encoding='utf8')
+    # result = string_to_dict(result)
 
-    for c in args.keys():
-        print(c)
-    # posts = [post._jsonify() for post in posts]
+    return render_template('board.html', result=result)
 
-    # return posts
-    return "OK"
 
 @bp.route('/post_read/<int:postno>')
 def post_read(postno):
@@ -58,9 +54,9 @@ def post_read(postno):
 
 @bp.route('/post', strict_slashes=False)
 @bp.route('/post/<int:postno>')
+@login_required
 def post_write(method='GET', postno=None):
     print(">>>>>>>>>>>>>> user ", session['loginUser'])
-    print(">>>>>>>>>>>>>> postno ", postno)
     if postno is not None:
         post = post_read(postno)
         # if post.author != session['loginUser']:
