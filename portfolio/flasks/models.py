@@ -48,5 +48,5 @@ class Post(Base):
     def _jsonify(self):
         return json.dumps({"head" : self.head, "content" : self.content, "author" : self.author}, ensure_ascii=False)
     
-    def getJson(self):
+    def _getjson(self):
         return {"head" : self.head, "content" : self.content, "author" : self.author}

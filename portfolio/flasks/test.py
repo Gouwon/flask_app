@@ -46,4 +46,65 @@ v = [{'head': '글10 의 제목입니다.', 'content': '글10 의 내용입니�
 
 import re
 
-p = ''
+class svc(object):
+    # print("<<<")
+    p = "123"
+
+    def fun(sss="default"):
+        print(",,,,,, ", sss)
+    
+    def get_call(self):
+        return self.call
+    def set_call(self, v=1):
+        self.call = v
+
+    v = fun()
+
+    def __init__(self):
+        self.call = 100
+        self.g = self.get_call()
+        self.s = self.set_call()
+
+    def __call__(self):
+        print("this is call")
+
+
+s = svc()
+# s()
+print(">>>>>", s.__getattribute__('v'))
+print(">>>>>", s.__getattribute__('s'))
+print(">>>>>", s.__getattribute__('g'))
+
+print(dir(s))
+
+def l(n=2):
+    return n + 1
+
+w = { "ss" : l() }
+
+print(w["ss"])
+
+
+# a = l()
+# print(a)
+
+# def bind(instance, method):
+#     def binding_scope_fn(*args, **kwargs): 
+#         return method(instance, *args, **kwargs)
+#     return binding_scope_fn
+
+
+def like(*args, **kwargs):
+    def nested_function(*args, **kwargs):
+        return " %s 입니다. " % args
+    return nested_function
+
+# a = like("s")
+# b = like()
+a = like()
+print("<<<<", type(a), a, dir(a))
+# print(">>>", a)
+# print(object.__dir__)
+# print(dir(object))
+
+
