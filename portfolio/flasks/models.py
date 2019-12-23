@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String, func, DateTime, func
 from .init_db import Base, db_session
 import json
-
+from collections import OrderedDict
 
 class User(Base):
     __tablename__ = 'Users'
@@ -50,3 +50,28 @@ class Post(Base):
     
     def _getjson(self):
         return {"head" : self.head, "content" : self.content, "author" : self.author}
+
+class QuertyConstructor(Post):
+    def __init__(self, table=Post, **kwargs):
+        self.table = table
+        self.data = self.__ordered_dict__(**kwargs)
+        self.sql_query = None
+        self.sql_inner_query = None
+
+    @property
+    def query(self):
+        print("inside the getter")
+        self.sql_query="second"
+        return self.sql_query
+
+    def filter_query(self):
+        
+        return self.query
+            
+        
+        
+
+# if __name__ == "__main__":
+    # data = {'order': 'desc', 'criteria': 'head', 'search': '', 'limit' : '10', 'pageno' : '0'}
+    # q = QuertyConstructor(table='Post', **data)
+    # print(q.table, q.sql_query, q.query)

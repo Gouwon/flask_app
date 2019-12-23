@@ -22,10 +22,10 @@ def string_to_dict(*args, **kwargs):
 
     return data
     
-def like():
-    def nested_function(obj, func_name):
-        return " %s 입니다. " % func_name
-    return nested_function(obj, func_name)
+# def like():
+#     def nested_function(obj, func_name):
+#         return " %s 입니다. " % func_name
+#     return nested_function(obj, func_name)
 
 def params_to_query(**kwargs):
     # {'order': 'desc', 'criteria': 'head', 'search': '', 'limit': '20'}
@@ -37,16 +37,19 @@ def params_to_query(**kwargs):
     params['criteria']
 
 
-    # Post.query.filter(Post.head.like("%글1%", escape='/')).order_by(sql.expression.desc(Post.registdt)).limit(10).offset(10)
+    Post.query.filter(Post.head.like("%글1%", escape='/')).order_by(sql.expression.desc(Post.registdt)).limit(10).offset(10)
     
 
 
 
 def query_db(table, **kwargs):
     q = db_session.query(table)
+    print(">>>>>>>>>>> ", kwargs)
     for k, v in kwargs.items():
         f = getattr(table, k)
+        print("<<<<<<<<" , f)
         q = q.filter(f.like(v, escape="/")) 
+        print("\n\n\n, q", q)
     return q.all()
 
 

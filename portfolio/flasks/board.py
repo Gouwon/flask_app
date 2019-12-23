@@ -27,18 +27,18 @@ def board_read(*args):
     params  = request.args
     print(";;;;;;;;;;;;;;; ", params)
     p = { k : v for k,v in params.items()}
-    print(";;;;;;;;;;;;;;; ", p, type(p))
-    params_to_query(**params)
-    # d = query_db(Post, **{"head" : "%글1%"})
+    # print(";;;;;;;;;;;;;;; ", p, type(p))
+    # params_to_query(**params)
+    d = query_db(Post, **{"criteria" : "head", "order" : "desc", "search" : "%글1%", "limit" : "10", "pageno" : "0", "order_by" : "registdt"})
     # print("................. ", d)
 
     # if len(params) == 0:
-    #     posts =  Post.query.filter().order_by(sql.desc(Post.registdt)).limit(10)
+        # posts =  Post.query.filter().order_by(sql.desc(Post.registdt)).limit(10)
     
     # posts = Post.query.filter('Post.head.like("%글%")').all()
-    posts = Post.query.filter(Post.head.like('%글1%')).limit(20).offset(0)
+    # posts = Post.query.filter(Post.head.like('%글1%')).limit(20).offset(0)
     
-    # posts = d
+    posts = d
     # response_data = [post._jsonify() for post in posts]
     # result = { "result" : response_data, "b" : "DDD" , "ddd" : { "aaaa" : "ssss" }}
     # result = json.dumps(result, ensure_ascii=False)
