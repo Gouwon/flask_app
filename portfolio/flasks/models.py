@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String, func, DateTime, func
 from .init_db import Base, db_session
 import json
-from collections import OrderedDict
+from collections import OrderedDict, namedtuple
 
 class User(Base):
     __tablename__ = 'Users'
@@ -53,10 +53,19 @@ class Post(Base):
 
 class QuertyConstructor(Post):
     def __init__(self, table=Post, **kwargs):
-        self.table = table
-        self.data = self.__ordered_dict__(**kwargs)
-        self.sql_query = None
+        self.table_model = table
+        self.table = db_session.query(self.table_model)
+        # self.data = self.__ordered_dict__(**kwargs)
+        self.data = self.get_filterset(kwargs)
+        self.sql_query = self.get_query(self.data)
         self.sql_inner_query = None
+        
+        w = get_filterset(data)
+        # print("\n\n ",w)
+        # table = 'Post'
+        # self.table_query = 'Post.query'
+        self.q = None
+        self.inner_q = None
 
     @property
     def query(self):
@@ -64,14 +73,69 @@ class QuertyConstructor(Post):
         self.sql_query="second"
         return self.sql_query
 
-    def filter_query(self):
-        
-        return self.query
-            
-        
-        
+    # w=list(filter(lambda e: e.x == 1, l))[0]
+    def __ordered_dict__(self, unordered_dict):
+        filts = namedtuple('filters', ['m', 'o', 'v'])
+        result = []
+        for k, v in unordered_dict.items():
+            if k == 'pageno':
+                k = 'offset'
+            result.append(filters(m, k, v))
 
-# if __name__ == "__main__":
-    # data = {'order': 'desc', 'criteria': 'head', 'search': '', 'limit' : '10', 'pageno' : '0'}
-    # q = QuertyConstructor(table='Post', **data)
-    # print(q.table, q.sql_query, q.query)
+        return ordered_dict
+
+    def get_filterset(self, dictionary):
+        test = namedtuple("test", ["model", "attr", "value"])
+        w = [ None for i in range(len(dictionary)-1)]
+        insert_order = {"criteria" : "", "search" : 0, "order_by" : 1, "order" : 2, "limit" : 3, "offset" : 4}
+        c = None
+        for k, v in dictionary.items():
+            m = 'Post'
+            if k == 'pageno':
+                k = 'offset'
+            i = insert_order[k]
+
+            if k == 'search':
+                k = c
+                
+
+            if k == 'criteria':
+                c = v
+                continue
+
+            if k == 'order_by':
+                k, v = v , "order_by"
+
+            if k == 'order':
+                m = 'sql.expression'
+                k, v = v, k
+
+            w[i] = test(m, k, v)
+        return w
+
+
+
+    # filterset = [test(model='sql.expression', operation='search', value=''), test(model='Post', operation='hasattr', value='head'), test(model='Post', operation='hasattr', value='registdt'), test(model='sql.expression', operation='order', value='desc'), test(model='sql.expression', operation='limit', value='10'), test(model='sql.expression', operation='offset', value='0')]
+
+    def get_query(self, fl):
+        '''filterset: (model, operation, value)
+            :return query
+        '''
+        print(fl, type(fl))
+
+        # [test(model='Post', attr='head', value='%글1%'), test(model='Post', attr='registdt', value='order_by'), test(model='sql.expression', attr='desc', value='order'), test(model='Post', attr='limit', value='10'), test(model='Post', attr='offset', value='0')]
+
+        for l in fl:
+            if l.model != 'sql.expression':
+                self.inner_q = getattr(l.model, l.attr) if hasattr(l.model, l.attr) else None
+                print("\n\n\n:::::::::::::::::::::", self.inner_q)
+                if l.value != 'order_by':
+                    self.inner_q = self.inner_q.like(l.value, escape='/')
+                    self.q = self.table.filter(self.inner_q)
+            else:
+                if l.value == 'order':
+                    qq = getattr(l.model, l.attr)(self.inner_q) if hasattr(l.model, l.attr) else None
+                    self.q = self.q.order_by(qq)
+                else:
+                    qq = getattr(l.model, l.attr)(l.value) if hasattr(l.model, l.attr) else None
+                    self.q = self.q.order_by(qq) 

@@ -53,3 +53,61 @@ def query_db(table, **kwargs):
     return q.all()
 
 
+def get_filterset(dictionary):
+    w = [ None for i in range(len(dictionary)-1)]
+    insert_order = {"criteria" : "", "search" : 0, "order_by" : 1, "order" : 2, "limit" : 3, "offset" : 4}
+    c = None
+    for k, v in data.items():
+        m = 'Post'
+        if k == 'pageno':
+            k = 'offset'
+        i = insert_order[k]
+
+        if k == 'search':
+            k = c
+            
+
+        if k == 'criteria':
+            c = v
+            continue
+
+        if k == 'order_by':
+            k, v = v , "order_by"
+
+        if k == 'order':
+            m = 'sql.expression'
+            k, v = v, k
+
+        w[i] = test(m, k, v)
+    return w
+
+
+
+table = 'Post'
+table_query = 'Post.query'
+q = None
+inner_q = None
+
+# filterset = [test(model='sql.expression', operation='search', value=''), test(model='Post', operation='hasattr', value='head'), test(model='Post', operation='hasattr', value='registdt'), test(model='sql.expression', operation='order', value='desc'), test(model='sql.expression', operation='limit', value='10'), test(model='sql.expression', operation='offset', value='0')]
+
+def get_query(fl):
+    '''filterset: (model, operation, value)
+        :return query
+    '''
+    print(fl, type(fl))
+
+    # [test(model='Post', attr='head', value='%글1%'), test(model='Post', attr='registdt', value='order_by'), test(model='sql.expression', attr='desc', value='order'), test(model='Post', attr='limit', value='10'), test(model='Post', attr='offset', value='0')]
+
+    for l in fl:
+        if fl.model != 'sql.expression':
+            inner_q = getattr(fl.model, fl.attr) if hasattr(fl.model, fl.attr) else None
+            if fl.value != 'order_by':
+                inner_q = inner_q.like(fl.value, escape='/')
+                q = table_query.filter(inner_q)
+        else:
+            if fl.value == 'order':
+                qq = getattr(fl.model, fl.attr)(inner_q) if hasattr(fl.model, fl.attr) else None
+                q = q.order_by(qq)
+            else:
+                qq = getattr(fl.model, fl.attr)(fl.value) if hasattr(fl.model, fl.attr) else None
+                q = q.order_by(qq)
