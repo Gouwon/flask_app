@@ -1,4 +1,9 @@
 #!/bin/sh
 
-# python ./flasks/__init__.py
+
+# to activate virtual environment
+. ./venv/venv/bin/activate
 python ./start_flask.py
+
+# to exit vitual environment
+# >> deactivate

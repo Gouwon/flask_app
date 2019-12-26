@@ -1,7 +1,24 @@
-from sqlalchemy import Column, Integer, String, func, DateTime, func
+from sqlalchemy import Column, Integer, String, func, DateTime, func, BLOB
 from .init_db import Base, db_session
 import json
 from collections import OrderedDict, namedtuple
+
+
+class FlaskSession(Base):
+    __tablename__ = 'flask_session'
+
+    sid = Column(String, primary_key=True)
+    value = Column(BLOB)
+
+    @classmethod
+    def chang(cls, sid, value):
+        rec = db_session.query(cls).filter(cls.sid == sid).first()
+        if not rec:
+            rec = cls()
+            rec.sid = sid
+        rec.value = value
+
+        return rec
 
 class User(Base):
     __tablename__ = 'Users'
