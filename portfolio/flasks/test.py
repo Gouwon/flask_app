@@ -15,4 +15,5 @@ l = ['%s', '%s_', '__%s__']
 
 for i in l:
     print(i % vs)
-
+s = (0 - 1) * 2
+print(s)

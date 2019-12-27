@@ -8,7 +8,7 @@
 <p>This is board.html</p>
 
 <form id="search_field">
-    <select name="order" id="">
+    <select name="order" id="order">
         <option value="desc" selected>내림차순</option>
         <option value="asce">오름차순</option>
     </select>
@@ -16,22 +16,29 @@
         <option value="head" selected>제목</option>
         <option value="content">내용</option>
         <option value="author">글쓴이</option>
+        <option value="registdt">생성일</option>
     </select>
     <select name="limit" id="limit">
         <option value="20" selected>20</option>
         <option value="50">50</option>
         <option value="100">100</option>
     </select>
+    <select name="order_by" id="order_by">
+        <option value="head" selected>제목</option>
+        <option value="content">내용</option>
+        <option value="author">글쓴이</option>
+        <option value="registdt">생성일</option>
+    </select>
+    <input type="hidden" name="offset" id="offset" value="0">
     <input type="search" name="search" id="search">
-    <input type="submit" value="검색">
+    <input type="submit" value="검색" onclick="return gw()">
 </form>
-
 {% if result %}
     {% set data = result.result %}
     {% for datum in data %}
         <div>
             <dl>
-                <dt>제목 | {{ datum.head }}</dt>
+                <dt>제목 | {{ datum.head }} --------------- by {{ datum.author }}</dt>
                 <dd>{{ datum.content }}</dd>
             </dl>
         </div>
@@ -42,7 +49,10 @@
 {% block script %}
 <script>
 function gw() {
-
+    var $search = document.getElementById('search').value;
+    if (!$search.endsWith('%')){
+        document.getElementById('search').value = '%'.concat($search, '%');
+    }
 }
 </script>
 {% endblock  script %}

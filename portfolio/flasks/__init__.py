@@ -11,6 +11,7 @@ from flask.sessions import SessionInterface, SessionMixin
 from werkzeug.datastructures import CallbackDict
 from pymongo import MongoClient
 from redis import Redis
+from beaker.middleware import SessionMiddleware
 
 app = Flask(__name__)
 app.debug = True
@@ -25,6 +26,24 @@ app.register_blueprint(board.bp)
 from .init_db import db_session, init_db
 from .models import FlaskSession
 
+# <-------------------------- session using beaker --------------------------->
+session_opts = {
+    'session.type': 'ext:memcached',
+    'session.url': '127.0.0.1:11211',
+    'session.data_dir': './cache',
+}
+
+class BeakerSessionInterface(SessionInterface):
+    def open_session(self, app, request):
+        session = request.environ['beaker.session']
+        return session
+    
+    def save_session(self, app, session, response):
+        session.save()
+
+app.wsgi_app = SessionMiddleware(app.wsgi_app, session_opts)
+app.session_interface = BeakerSessionInterface()
+# <-------------------------- session using beaker --------------------------->
 
 # <-------------------------- session using redis ---------------------------->
 class RedisSession(CallbackDict, SessionMixin):
@@ -135,7 +154,7 @@ class MongoSessionInterface(SessionInterface):
                             expires=self.get_expiration_time(app, session), \
                             httponly=True, domain=domain)
 
-app.session_interface = MongoSessionInterface(da='jpub')
+app.session_interface = MongoSessionInterface(db='jpub')
 app.config.update(
     SESSION_COOKIE_NAME='jpub_flask_session'
 )
@@ -143,7 +162,7 @@ app.config.update(
 
 
 # <-------------------------- session using sqlite --------------------------->
-class SqliteSession(MutableMapping, SessionMixin):
+class SqliteSession(SessionMixin, MutableMapping):
     _create_sql = \
         'CREATE TABLE IF NOT EXISTS session (key TEXT PRIMARY KEY, val BLOB)'
     _get_sql = 'SELECT val FROM session WHERE key = ?'
@@ -288,6 +307,9 @@ app.config.update(
 # <-------------------------- session using sqlite --------------------------->
 
 # <-------------------------- session using sqlalchemy ----------------------->
+class Session(dict, SessionMixin):
+    pass
+
 class SQLAlchemySession(CallbackDict, SessionMixin):
     def __init__(self, initial=None, sid=None, new=False):
         def on_update(self):
@@ -322,8 +344,12 @@ class SQLAchemySessionInterface(SessionInterface):
         if not session:
             rec = db_session.query(FlaskSession) \
                     .filter(FlaskSession.sid == session.sid).first()
-            db_session.delete(rec)
-            db_session.commit()
+            try:
+                db_session.delete(rec)
+                db_session.commit()
+            except Exception as err:
+                print(">>>>>>>>>>> save_session ", err)
+                pass
             if session.modified:
                 response.delete_cookie(app.session_cookie_name, domain=domain)
             
@@ -343,10 +369,15 @@ class SQLAchemySessionInterface(SessionInterface):
 
 app.session_interface = SQLAchemySessionInterface()
 app.config.update(
-    SECRET_KEY=os.urandom(),
+    SECRET_KEY=os.urandom(60),
     SESSION_COOKIE_NAME='jpub_flask_session'
 )
 # <-------------------------- session using sqlalchemy ----------------------->
+
+app.config.update(
+    SECRET_KEY='',
+    SESSION_COOKIE_NAME=''
+)
 
 app.config['SQLALCHEMY_DATABASE_URI'] \
     = 'mysql+pymysql://dooo:root1!@localhost/dooodb?charset=utf8'

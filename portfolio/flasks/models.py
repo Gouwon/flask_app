@@ -7,7 +7,7 @@ from collections import OrderedDict, namedtuple
 class FlaskSession(Base):
     __tablename__ = 'flask_session'
 
-    sid = Column(String, primary_key=True)
+    sid = Column(String(255), primary_key=True)
     value = Column(BLOB)
 
     @classmethod

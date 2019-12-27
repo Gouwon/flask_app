@@ -61,11 +61,39 @@ bp = Blueprint('bd', __name__, url_prefix='/board')
 #     return result  ## string으로 결과가 client에 가게 될 것임. json.loads()를 하면 서버에서는 dict로 처리함. client에 json으로 보내려면 jsonify()를 시켜줘야 함. 아니면 client에서 jsonify를 실행.. the JSON object must be str, bytes or bytearray, not dict
 #     # return result2
 
+
+def p_to_j(**kwargs):
+    return kwargs
+
+# board post pagination
+@bp.route('/board_read')
+def get_posts():
+    # ImmutableMultiDict([('order', 'desc'), ('criteria', 'head'), ('offset', '20'), ('order_by', 'head'), ('limit', ''), ('search', '')])
+    if request.args:
+        data = p_to_j(**request.args)
+        _offset = (int(data['offset']) - 1) * int(data['limit']) \
+                if int(data['offset']) > 0 else 0 
+
+        posts = Post.query.filter( \
+            getattr(Post, data['criteria']).like(data['search'])). \
+            order_by( \
+                getattr(sql, data['order'])(getattr(Post, data['order_by']))). \
+                limit(data['limit']).offset(_offset)
+    else:
+        posts = Post.query.filter(). \
+                order_by(sql.desc(Post.registdt)).limit(20).offset(0)
+    
+    
+    
+    posts = [post._getjson() for post in posts]
+
+    return json.dumps({'result': posts}, ensure_ascii=False)
+
 @bp.route('/')
 def draw_board():
     if request.args:
         print("........... ", request.args)
-    result = board_read()
+    result = get_posts()
     result = json.loads(result, encoding='utf8')
     # result = string_to_dict(result)
 
@@ -99,7 +127,8 @@ def post_create():
     received_data = request.get_json()
     input_data = received_data['data']
 
-    post = Post(head=input_data['head'], content=input_data['content'], author=session['loginUser']['id'])
+    post = Post(head=input_data['head'], content=input_data['content'], \
+                author=session['loginUser']['id'])
 
     try:
         db_session.add(post)
