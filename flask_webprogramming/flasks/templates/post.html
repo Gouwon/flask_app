@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %}
+<title>Post</title>
+{% endblock title%}
+
+{% block body %}
+<p>This is post.html</p>
+{% if result %}
+{{ result }}
+{% endif %}
+<input type="button" value="수정" onclick="gw()">
+{% endblock body %}
+
+{% block script %}
+<script>
+function gw() {
+    window.location = 
+}
+</script>
+{% endblock script %}
