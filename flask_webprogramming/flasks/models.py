@@ -63,10 +63,12 @@ class Post(Base):
         return '<Post %s by %s>' % (self.head, self.author)
 
     def _jsonify(self):
-        return json.dumps({"head": self.head, "content": self.content, "author": self.author}, ensure_ascii=False)
+        return json.dumps({"head": self.head, "content": self.content, \
+                        "author": self.author}, ensure_ascii=False)
     
     def _getjson(self):
-        return {"head": self.head, "content": self.content, "author": self.author}
+        return {"head": self.head, "content": self.content, \
+                "author": self.author, "id": self.id}
 
 class QuertyConstructor(Post):
     def __init__(self, table=Post, **kwargs):
@@ -104,7 +106,8 @@ class QuertyConstructor(Post):
     def get_filterset(self, dictionary):
         test = namedtuple("test", ["model", "attr", "value"])
         w = [ None for i in range(len(dictionary)-1)]
-        insert_order = {"criteria" : "", "search" : 0, "order_by" : 1, "order" : 2, "limit" : 3, "offset" : 4}
+        insert_order = {"criteria" : "", "search" : 0, \
+                        "order_by" : 1, "order" : 2, "limit" : 3, "offset" : 4}
         c = None
         for k, v in dictionary.items():
             m = 'Post'

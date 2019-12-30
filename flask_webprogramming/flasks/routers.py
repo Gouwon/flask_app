@@ -1,6 +1,7 @@
 from flasks import app
 from flask import render_template, request
 
+
 @app.route('/')
 def root():
     return render_template('base.html')

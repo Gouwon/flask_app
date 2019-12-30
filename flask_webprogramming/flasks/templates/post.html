@@ -6,16 +6,22 @@
 
 {% block body %}
 <p>This is post.html</p>
+
 {% if result %}
-{{ result }}
+<dl>
+    <dt>제목 | {{ result.head }}</dt>
+    <dd>{{ result.content }}</dd>
+</dl>
+    {% if result.result != None %}
+    <input type="hidden" name="postno" id="postno" value="{{result.id}}">
+    <a href="{{url_for('bd.draw_write',postno=result.id)}}"><input type="button" value="수정"></a>
+    {% endif %}
 {% endif %}
-<input type="button" value="수정" onclick="gw()">
 {% endblock body %}
+
 
 {% block script %}
 <script>
-function gw() {
-    window.location = 
-}
+
 </script>
 {% endblock script %}

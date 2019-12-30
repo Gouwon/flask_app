@@ -17,3 +17,15 @@ for i in l:
     print(i % vs)
 s = (0 - 1) * 2
 print(s)
+
+
+import re
+s = "?order=desc&criteria=head&limit=20&order_by=head&offset=&search=%25%25"
+
+pattern = re.compile('offset=(.*[0-9])&')
+# v = pattern.search(s)
+v = re.findall(pattern, s)[0]
+print(v)
+
+
+

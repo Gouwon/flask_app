@@ -6,7 +6,7 @@
 
 {% block body %}
 <p>this is regist.html</p>
-<form name="regist-form" method="POST" action="/auth/regist" onsubmit="return gw()">
+<form name="regist-form" method="POST" action="/auth/register" onsubmit="return gw()">
     <label for="userid">User ID</label>
     <input type="text" name="userid" id="userid">
     <label for="username">User Name</label>
@@ -51,6 +51,16 @@
 
     <!-- <font style='font-size:11px; font-weight:bold; color:#BF4C00;'>비밀번호는 영문, 숫자, 혹은 !@#$%^&*()?로 이루어져야 합니다.</font> -->
 </form>
+
+<hr>
+{{ form.username() }}
+<!-- {{ form }} -->
+<!-- {% for field in form %} -->
+<!-- <tr> -->
+    <!-- <th>{{ field.label }}</th> -->
+    <!-- <td>{{ field }}</td> -->
+<!-- </tr> -->
+<!-- {% endfor %} -->
 {% endblock body %}
 
 {% block script %}

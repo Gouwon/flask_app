@@ -7,30 +7,21 @@
 {% block body %}
 <p>This is Write.html</p>
 
-<form action="" id="texteditor" name="texteditor">
-    <dl>
-        <dt>제목</dt>
-        <dd></dd>
-        <dt></dt>
-        <dd></dd>
-    </dl>
-    <input type="button" value="create">
-    {% if result %}
-        {% set i = result %}
-        {% if i.result %}
-        <input type="text" id="head" name="head" value="{{ result.result.head }}">
-        <textarea name="content" id="content" cols="30" rows="10">{{ result.result.content }}</textarea>
-        {% endif %}
-    {% else %}
-    <input type="text" id="head" name="head">
-    <textarea name="content" id="content" cols="30" rows="10"></textarea>
-    {% endif %}
-    <input type="button" value="post_create" name="post_create" onclick="gw(event)">
-    {% if result %}
-    <input type="button" value="post_update" name="post_update" onclick="gw(event)">
-    <input type="button" value="post_delete" name="post_delete" onclick="gw(event)">
-    {% endif %}
-</form>
+{% if result.result != None %}
+    <form action="" id="texteditor" name="texteditor" method='POST'>
+        <input type="text" id="head" name="head" value="{{result.head}}">
+        <textarea name="content" id="content" cols="30" rows="10">{{result.content}}</textarea>
+        <input type="hidden" name="postno" id="postno" value="{{result.id}}">
+        <input type="button" value="post_update" name="post_update" onclick="gw(event)">
+        <input type="button" value="post_delete" name="post_delete" onclick="gw(event)">
+    </form>
+{% else %}
+    <form action="http://localhost:5000/w" id="texteditor" name="texteditor" method='POST'>
+        <input type="text" id="head" name="head">
+        <textarea name="content" id="content" cols="30" rows="10"></textarea>
+        <input type="button" value="post_create" name="post_create" onclick="gw(event)">
+    </form>
+{% endif %}
 {% endblock body %}
 
 {% block script %}
@@ -39,6 +30,18 @@ function gw(event) {
     console.log(">>>>>>>>>> event.target from  ", event.target.name);
     console.log(">>>>>>>>>> event.srcElement from  ", event.srcElement.name);
     console.log(">>>>>>>>>> event.currentTarget from  ", event.currentTarget.name);
+
+    _postno = document.getElementById('postno').value;
+    if(event.target.name == 'post_update'){
+        document.getElementById('texteditor').action = '/board/post/u/'.concat(_postno);
+        document.getElementById('texteditor').submit();
+    }else{
+        _isYes = window.confirm('Are you sure?')
+        if(_isYes){
+            document.getElementById('texteditor').action = '/board/post/d/'.concat(_postno);
+            document.getElementById('texteditor').submit();
+        }
+    }
 }
 </script>
 {% endblock script %}

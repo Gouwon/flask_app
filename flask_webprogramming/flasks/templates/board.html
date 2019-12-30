@@ -38,12 +38,19 @@
     {% for datum in data %}
         <div>
             <dl>
-                <dt>제목 | {{ datum.head }} --------------- by {{ datum.author }}</dt>
+                <a href="{{url_for('bd.draw_post',postno=datum.id)}} ">
+                <dt>제목 | {{ datum.head }} --------------- by {{ datum.author }}</dt></a>
                 <dd>{{ datum.content }}</dd>
             </dl>
         </div>
     {% endfor %}
 {% endif %}
+
+<div>
+    <a href="#"><input type="button" value="<-"></a>
+    <a href="#"><input type="button" value="->"></a>
+    <a href="#"><input type="button" value="----" disabled></a>
+</div>
 {% endblock body %}
 
 {% block script %}
@@ -54,5 +61,6 @@ function gw() {
         document.getElementById('search').value = '%'.concat($search, '%');
     }
 }
+
 </script>
 {% endblock  script %}

@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, make_response, jsonify, \
-                request, session, redirect, url_for, Response
+                request, session, redirect, url_for, Response, request
 from jinja2 import Markup
 from sqlalchemy import sql
 import sqlalchemy
@@ -14,9 +14,6 @@ from pprint import pprint
 
 bp = Blueprint('bd', __name__, url_prefix='/board')
 
-
-
-
 # returning params to dictionary
 def p_to_j(**kwargs):
     return kwargs
@@ -26,6 +23,8 @@ def p_to_j(**kwargs):
 def get_posts():
     if request.args:
         data = p_to_j(**request.args)
+        print('\n>>>>> data ', data)
+
         _offset = (int(data['offset']) - 1) * int(data['limit']) \
                 if int(data['offset']) > 0 else 0 
 
@@ -42,7 +41,7 @@ def get_posts():
 
     return json.dumps({'result': posts}, ensure_ascii=False)
 
-@bp.route('/')
+@bp.route('/', strict_slashes=False)
 # @cached(timeout=10 * 60, key='board/%s')
 def draw_board():
     result = get_posts()
@@ -50,80 +49,83 @@ def draw_board():
 
     return render_template('board.html', result=result)
 
+# C R U D
 
-@bp.route('/post_read/<int:postno>')
-def post_read(postno):
+# create post
+@bp.route('/post/c/', methods=['GET', 'POST'])
+@_jsonify
+def create_post():
+    data = request.get_json()
+    head = data['head']
+    content = data['content']
+    author = session['loginUser']['id']
+    post = Post(head=head, content=content, author=author)
+    try:
+        db_session.add(post)
+        db_session.commit()
+        msg = 'success'
+    except Exception as err:
+        print(">>>>> create_post err ", err)
+        db_session.rollback()
+        msg = 'failed'
+    return {'result': msg}
+
+# read post
+@bp.route('/post/r/<int:postno>', methods=['GET'])
+def read_post(postno, obj=False):
     post = Post.query.filter(Post.id == postno).first()
-    if post is None:
-        return {"result": "not Found"}
-    return post._getjson()
+    if obj:
+        return post
+    post = post._getjson() if post is not None else {'result': None}
+    return json.dumps(post, ensure_ascii=False)
 
-@bp.route('/post/<int:postno>', methods=['GET'])
-def draw_post(postno):
-    post = post_read(postno)
-    return render_template('post.html', result=post)
-
-@bp.route('/post', strict_slashes=False)
-@bp.route('/post/<int:postno>', methods=['POST'])
-@login_required
-def post_write(method='GET', postno=None):
-    # print(">>>>>>>>>>>>>> user ", session['loginUser'])
-    if postno is not None:
-        post = post_read(postno)
-        response_data = { "result" : post }
-        return render_template('write.html', result=response_data)
-    return render_template('write.html')
-
-@bp.route('/post_create', methods=['POST'])
+# update post
+@bp.route('/post/u/<int:postno>', methods=['POST'])
 @_jsonify
-def post_create():
-    # data = request.args.to_dict(flat=False) param
-    received_data = request.get_json()
-    input_data = received_data['data']
-
-    post = Post(head=input_data['head'], content=input_data['content'], \
-                author=session['loginUser']['id'])
-
+def update_post(postno):
+    post = read_post(postno, obj=True)
+    data = request.form
+    post.head = data['head']
+    post.content = data['content']
     try:
         db_session.add(post)
         db_session.commit()
-        msg = "success"
-    except Exception as sqlerr:
+        msg = 'sucess'
+    except Exception as err:
+        print(">>>>> update_post err ", err)
         db_session.rollback()
-        print(">>>>> sqlerr ", sqlerr)
-        msg = "failed"
-    return { "result" : msg }
+        msg = 'failed'
+    return {'result': msg}
 
-@bp.route('/post_update/<int:postno>', methods=['POST'])
+# delete post
+@bp.route('/post/d/<int:postno>', methods=['POST'])
 @_jsonify
-def post_update(postno):
-    post = url_for('post_read', postno)
-    received_data = request.get_json()
-    input_data = received_data['data']
-    post.head = input_data['head']
-    post.content = input_data['content']
-    post.updatedt = post.setupdatedt()
-
-    try:
-        db_session.add(post)
-        db_session.commit()
-        msg = "success"
-    except Exception as sqlerr:
-        db_session.rollback()
-        print(">>>>> sqlerr ", sqlerr)
-        msg = "failed"    
-    return { "result" : msg } 
-
-@bp.route('/post_delete/<int:postno>', methods=['POST'])
-@_jsonify
-def post_delete(postno):
-    post = url_for('post_read', postno)
+def delete_post(postno):
+    post = read_post(postno=postno, obj=True)
     try:
         db_session.delete(post)
         db_session.commit()
-        msg = "success"
-    except Exception as sqlerr:
+        msg = 'sucess'
+    except Exception as err:
+        print(">>>>> delete_post err ", err)
         db_session.rollback()
-        print(">>>>> sqlerr ", sqlerr)
-        msg = "failed"
-    return { "result" : msg }
+        msg = 'failed'
+    return {'result': msg}
+
+# draw post.html
+@bp.route('/post/<int:postno>', methods=['GET'])
+def draw_post(postno):
+    post = read_post(postno)
+    post = json.loads(post, encoding='utf8')
+    return render_template('post.html', result=post)
+
+# draw write.html
+@bp.route('/post/w', strict_slashes=False, methods=['GET'])
+@bp.route('/post/w/<int:postno>', methods=['GET'])
+def draw_write(postno=None):
+    if postno is not None:
+        post = read_post(postno=postno)
+        post = json.loads(post, encoding='utf8')
+        return render_template('write.html', result=post)
+    return render_template('write.html', result={'resutl': None})
+    

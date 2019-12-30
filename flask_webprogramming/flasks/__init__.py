@@ -383,6 +383,10 @@ app.config['SQLALCHEMY_DATABASE_URI'] \
     = 'mysql+pymysql://dooo:root1!@localhost/dooodb?charset=utf8'
 # app.config['SECRET_KEY'] = 'development'
 
+app.config.update(
+    STRICT_SLASHED=False
+)
+
 @app.route('/session_in')
 def session_signin():
     session['test'] = 'abc'
@@ -412,3 +416,4 @@ def teardownAppcontext(exception):
 @app.route('/')
 def index():
     return render_template('base.html')
+    
