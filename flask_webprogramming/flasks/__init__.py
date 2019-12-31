@@ -412,8 +412,3 @@ def beforeFirstRequest():
 def teardownAppcontext(exception):
     print('>>>>> teardown_appcontext :: ', exception)
     db_session.remove() # remove used db_session
-
-@app.route('/')
-def index():
-    return render_template('base.html')
-    

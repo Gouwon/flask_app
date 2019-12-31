@@ -19,13 +19,67 @@ s = (0 - 1) * 2
 print(s)
 
 
-import re
-s = "?order=desc&criteria=head&limit=20&order_by=head&offset=&search=%25%25"
+# import re
+# s = "?order=desc&criteria=head&limit=20&order_by=head&offset=&search=%25%25"
 
-pattern = re.compile('offset=(.*[0-9])&')
+# pattern = re.compile('offset=(.*[0-9])&')
 # v = pattern.search(s)
-v = re.findall(pattern, s)[0]
-print(v)
+# v = re.findall(pattern, s)[0]
+# print(v)
+
+import pymysql
+import random
 
 
+def get_conn(db='dooodb'):
+    return pymysql.connect(
+        host='localhost',
+        user='dooo',
+        password='',
+        port=3306,
+        db=db,
+        charset='utf8')
 
+sql_insert = "insert into Posts(head, content, author) values(%s,%s,%s)"
+lst = []
+heads = ['%s의 글의 제목입니다.', '%s의 글입니다.']
+contents = ['강감찬은 강감하다.', '글의 내용은 없습니다.', '떨어저라! ^.^', '내이으아']
+authors = [i for i in range(10)]
+
+for i in range(1, 1000):
+    v = random.randint(1, 10) % 2
+    w = random.randint(1, 10) % 3
+    x = random.randint(1, 10) % 10
+    lst.append(
+        tuple(
+            (heads[v], contents[w], authors[x])
+        )
+    )
+
+def save(lst):
+    try:
+        conn = get_conn('dooodb')
+        conn.autocommit = False
+        cur = conn.cursor()
+
+        cur.executemany(sql_insert, lst)
+        conn.commit()
+        print("Affected RowCount is", cur.rowcount, "/", len(lst))
+
+    except Exception as err:
+        conn.rollback()
+        print("Error!!", err)
+
+    finally:
+        try:
+            cur.close()
+        except:
+            print("Error on close cursor")
+
+        try:
+            conn.close()
+        except Exception as err2:
+            print("Fail to connect!!", err2)
+
+
+save(lst)

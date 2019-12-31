@@ -8,21 +8,24 @@
 <p>This is board.html</p>
 
 <form id="search_field">
+    <label for="order">Order</label>
     <select name="order" id="order">
         <option value="desc" selected>내림차순</option>
         <option value="asce">오름차순</option>
     </select>
     <select name="criteria" id="criteria">
-        <option value="head" selected>제목</option>
+        <option value="head">제목</option>
         <option value="content">내용</option>
         <option value="author">글쓴이</option>
-        <option value="registdt">생성일</option>
+        <option value="registdt">작성일</option>
     </select>
+    <label for="limit">Limit</label>
     <select name="limit" id="limit">
         <option value="20" selected>20</option>
         <option value="50">50</option>
         <option value="100">100</option>
     </select>
+    <label for="order_by">Order_by</label>
     <select name="order_by" id="order_by">
         <option value="head" selected>제목</option>
         <option value="content">내용</option>
@@ -34,6 +37,7 @@
     <input type="submit" value="검색" onclick="return gw()">
 </form>
 {% if result %}
+    {{ result.page }}
     {% set data = result.result %}
     {% for datum in data %}
         <div>

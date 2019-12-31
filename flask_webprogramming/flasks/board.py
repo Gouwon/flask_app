@@ -25,21 +25,27 @@ def get_posts():
         data = p_to_j(**request.args)
         print('\n>>>>> data ', data)
 
-        _offset = (int(data['offset']) - 1) * int(data['limit']) \
-                if int(data['offset']) > 0 else 0 
+        _offset = int(data['offset']) * int(data['limit']) \
 
-        posts = Post.query.filter( \
+        post_sql = Post.query.filter( \
             getattr(Post, data['criteria']).like(data['search'])). \
             order_by( \
-                getattr(sql, data['order'])(getattr(Post, data['order_by']))).\
-                limit(data['limit']).offset(_offset)
+                getattr(sql, data['order'])(getattr(Post, data['order_by'])))
+                   
+        counts = round(post_sql.count() / int(data['limit']))
+        s = post_sql.limit(10).offset(1200).count()
+        print("\n>>>>> s ", s)
+        posts = post_sql.limit(data['limit']).offset(_offset)
     else:
-        posts = Post.query.filter(). \
-                order_by(sql.desc(Post.registdt)).limit(20).offset(0)
+        post_sql = Post.query.filter().order_by(sql.desc(Post.registdt))
+        _offset = 0
+        counts = round(post_sql.count() / 20)
+        posts = post_sql.limit(20).offset(0)
     
     posts = [post._getjson() for post in posts]
 
-    return json.dumps({'result': posts}, ensure_ascii=False)
+    return json.dumps({'result': posts, 'page': (counts, _offset)}, \
+                    ensure_ascii=False)
 
 @bp.route('/', strict_slashes=False)
 # @cached(timeout=10 * 60, key='board/%s')
