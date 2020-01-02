@@ -2,6 +2,7 @@
 
 
 # to activate virtual environment
+
 . ./venv/venv/bin/activate
 python ./start_flask.py
 

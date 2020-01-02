@@ -37,7 +37,7 @@
     <input type="submit" value="검색" onclick="return gw()">
 </form>
 {% if result %}
-    {{ result.page }}
+    {{ result.count, result.page }}
     {% set data = result.result %}
     {% for datum in data %}
         <div>
@@ -51,9 +51,24 @@
 {% endif %}
 
 <div>
-    <a href="#"><input type="button" value="<-"></a>
-    <a href="#"><input type="button" value="->"></a>
-    <a href="#"><input type="button" value="----" disabled></a>
+    {% if result.page == 0 %}
+    <a href='javascript:void(0);' onclick="on_move_page();"><input type="button" value="<-" disabled></a>
+    {% else %}    
+    <a href='javascript:void(0);' onclick="on_move_page(previous);"><input type="button" value="<-"></a>
+    {% endif %}
+    
+    {% if result.page == result.count %}
+    <a href='javascript:void(0);' onclick="on_move_page();"><input type="button" value="----" disabled></a>
+    {% else %}
+    <a href='javascript:void(0);' onclick="on_move_page(event);"><input type="button" name="next" value="->"></a>
+    {% endif %}
+
+    {% for i in range(0, result.count) %}
+    {% if i < 10 %}
+        <p>{{ i }}</p>
+    {% endif %}
+    {% endfor %}
+
 </div>
 {% endblock body %}
 
@@ -61,9 +76,28 @@
 <script>
 function gw() {
     var $search = document.getElementById('search').value;
-    if (!$search.endsWith('%')){
+    if ($search != '' && !$search.endsWith('%')){
         document.getElementById('search').value = '%'.concat($search, '%');
     }
+}
+
+function on_move_page(page) {
+    console.log(">>>>>>>>>> event.target from  ", event.target.name);
+    console.log(">>>>>>>>>> event.srcElement from  ", event.srcElement.name);
+    console.log(">>>>>>>>>> event.currentTarget from  ", event.currentTarget.name);
+    console.log(">>>>>>>>>> event.srcElement from  ", event.srcElement.value);
+    console.log("on_move_page()on_move_page()on_move_page()on_move_page() ", page);
+
+    if (event.target.name == "next"){
+        _url = location.search;
+        console.log(">>>>>>  window.search window.search window.search ",  _url);
+        if (_url == "") {
+            location.href = location.href + "?offset=1";
+        }
+        
+        // console.log(_url.match(/offset=.*[0-9]&/));
+    }
+
 }
 
 </script>

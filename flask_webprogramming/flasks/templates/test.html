@@ -6,6 +6,12 @@
 
 {% block body %}
 <p>This is test.html</p>
+
+{% for i in range(0,5) %}
+<p>{{i}}</p>
+{% endfor %}
+
+
 <form action="/board/1" method="get"><button type="submit" value="s"></button></form>
 
 <select name="criteria" id="criteria">
