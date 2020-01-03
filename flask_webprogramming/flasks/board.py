@@ -58,7 +58,8 @@ def get_posts():
     return json.dumps({
         'result': posts, 
         'count': counts, 
-        'page': _offset
+        'page': _offset,
+        'limit': int(data['limit'])
     }, ensure_ascii=False)
 
 @bp.route('/', strict_slashes=False)

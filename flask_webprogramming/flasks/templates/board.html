@@ -51,37 +51,44 @@
 {% endif %}
 
 <div>
-    {% if result.page == 0 %}
+    {% set s = (result.page / 10) | int %}
+    {% set e = (s * 10) + 11 %}
+    {% set p = result.page + 1 %}
+    {{result.page, s, e, p}}
+    
+    {% if p == 0 %}
     <a href='javascript:void(0);' onclick="on_move_page();"><input type="button" value="<-" disabled></a>
     {% else %}    
-    <a href='javascript:void(0);' onclick="on_move_page(previous);"><input type="button" value="<-"></a>
+    <a href='javascript:void(0);' onclick="on_move_page(event);"><input type="button" name="previous" value="<-"></a>
     {% endif %}
     
-    {% if result.page == result.count %}
+    {% for i in range(s * 10 + 1, e)%}
+    {% if i == p %}
+    <span>현재 페이지 -> </span>
+    {% endif %}
+    <a href='javascript:void(0);' onclick="on_move_page(event);"><input type="button" value="{{i}}"></a>
+    {% endfor %}
+    
+    {% if p == result.count %}
     <a href='javascript:void(0);' onclick="on_move_page();"><input type="button" value="----" disabled></a>
     {% else %}
     <a href='javascript:void(0);' onclick="on_move_page(event);"><input type="button" name="next" value="->"></a>
     {% endif %}
 
-    {% for i in range(0, result.count) %}
-    {% if i < 10 %}
-        <p>{{ i }}</p>
-    {% endif %}
-    {% endfor %}
 
 </div>
 {% endblock body %}
 
 {% block script %}
 <script>
-function gw() {
+function gw(){
     var $search = document.getElementById('search').value;
     if ($search != '' && !$search.endsWith('%')){
         document.getElementById('search').value = '%'.concat($search, '%');
     }
 }
 
-function on_move_page(page) {
+function on_move_page(page){
     console.log(">>>>>>>>>> event.target from  ", event.target.name);
     console.log(">>>>>>>>>> event.srcElement from  ", event.srcElement.name);
     console.log(">>>>>>>>>> event.currentTarget from  ", event.currentTarget.name);
@@ -89,16 +96,26 @@ function on_move_page(page) {
     console.log("on_move_page()on_move_page()on_move_page()on_move_page() ", page);
 
     if (event.target.name == "next"){
-        _url = location.search;
-        console.log(">>>>>>  window.search window.search window.search ",  _url);
-        if (_url == "") {
-            location.href = location.href + "?offset=1";
+        _param = location.search;
+        console.log("_param_param_param_param_param_param_param ", _param)
+        if(!_param){
+            location.href = location.origin + location.pathname + "?offset=1"
         }
+        var _present_offset = _param.match(/offset=(.*[0-9])/)[1];
+        _present_offset += 1;
+        _param = _param.replace(_param.match(/offset=.*[0-9]/)[0], "offset="+_present_offset);
+        location.href = location.origin + location.pathname + _param;
         
-        // console.log(_url.match(/offset=.*[0-9]&/));
+    }else if(event.target.name == "previous"){
+        _param = location.search;
+        var _present_offset = _param.match(/offset=(.*[0-9])/)[1];
+        _present_offset -= 1;
+        _param = _param.replace(_param.match(/offset=.*[0-9]/)[0], "offset="+_present_offset);
+        location.href = location.origin + location.pathname + _param;
     }
-
+    
 }
+
 
 </script>
 {% endblock  script %}
