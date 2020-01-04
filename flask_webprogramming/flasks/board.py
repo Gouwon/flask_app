@@ -1,3 +1,4 @@
+from math import ceil
 from flask import Blueprint, render_template, make_response, jsonify, \
                 request, session, redirect, url_for, Response, request
 from jinja2 import Markup
@@ -25,42 +26,45 @@ def get_posts():
                         'order_by': 'registdt', 'offset': '0', 'search': ''}
     search_key_set = set(search_preset.keys())
 
-    data = p_to_j(**request.args)
-    print('\n>>>>>>>>>>> data ', data)
-    data_key_set = set(data.keys())
+    params = p_to_j(**request.args)
+    print('\n>>>>>>>>>>> data ', params)
+    data_key_set = set(params.keys())
 
     update_keys = search_key_set - data_key_set
     
     for update_key in update_keys:
         data[update_key] = search_preset[update_key]
 
-    pprint(data)
+    pprint(params)
 
-    _offset = int(data['offset']) * int(data['limit'])
+    _offset = int(params['offset']) * int(params['limit'])
 
-    if (data['search'] == ""):
+    if (params['search'] == ""):
         post_sql = Post.query.filter().\
-            order_by(getattr(sql, data['order'])\
-                    (getattr(Post, data['order_by'])))
+            order_by(getattr(sql, params['order'])\
+                    (getattr(Post, params['order_by'])))
     else:
         post_sql = Post.query.filter(\
-            getattr(Post, data['criteria']).like(data['search'])).\
-                order_by(getattr(sql, data['order'])\
-                        (getattr(Post, data['order_by'])))
+            getattr(Post, params['criteria']).like(params['search'])).\
+                order_by(getattr(sql, params['order'])\
+                        (getattr(Post, params['order_by'])))
                 
-    counts = round(post_sql.count() / int(data['limit']))
-    s = post_sql.limit(10).offset(1200).count()
-    print("\n>>>>> s ", s)
-    posts = post_sql.limit(data['limit']).offset(_offset)
-    
+    counts = ceil(post_sql.count() / int(params['limit']))
+    posts = post_sql.limit(params['limit']).offset(_offset)
     posts = [post._getjson() for post in posts]
 
+    result = None if len(posts) == 0 else "OK"
+    data = ["등록된 글이 없습니다."] if len(posts) == 0 else posts
+    
+    pprint(data)
+
     return json.dumps({
-        'result': posts, 
-        'count': counts, 
-        'page': _offset,
-        'limit': int(data['limit'])
-    }, ensure_ascii=False)
+        'result': result,
+        'data': data, 
+        'page': int(params['offset']),
+        'limit': int(params['limit']),
+        'total': counts
+        }, ensure_ascii=False)
 
 @bp.route('/', strict_slashes=False)
 # @cached(timeout=10 * 60, key='board/%s')

@@ -36,9 +36,8 @@
     <input type="search" name="search" id="search">
     <input type="submit" value="검색" onclick="return gw()">
 </form>
-{% if result %}
-    {{ result.count, result.page }}
-    {% set data = result.result %}
+{% if result.result == "OK" %}
+    {% set data = result.data %}
     {% for datum in data %}
         <div>
             <dl>
@@ -48,35 +47,48 @@
             </dl>
         </div>
     {% endfor %}
+    <div>
+        {% set s = (result.page / 10) | int %}
+        {% set e = (s * 10) + 11 %}
+        {% set p = result.page + 1 %}
+        {% if e > result.total %}
+        {% set e = (result.total + 1) %}
+        {% endif %}
+        
+        {% if p > 5 %}
+        <a href='javascript:void(0);' onclick="on_move_page(event);"><input type="button" name="first" value="&Lt;-"></a>
+        {% endif %}
+
+        {% if p == 1 %}
+        <a href='javascript:void(0);' onclick="on_move_page(event);"><input type="button" value="&lt;-" disabled></a>
+        {% else %}    
+        <a href='javascript:void(0);' onclick="on_move_page(event);"><input type="button" name="previous" value="&lt;-"></a>
+        {% endif %}
+        
+        {% for i in range(s * 10 + 1, e)%}
+        {% if i == p %}
+        <span>현재 페이지 -> </span>
+        {% endif %}
+        <a href='javascript:void(0);' onclick="on_move_page(event);"><input type="button" value="{{i}}"></a>
+        {% endfor %}
+        
+        {% if p == result.total %}
+        <a href='javascript:void(0);' onclick="on_move_page(event);"><input type="button" value="-&gt;" disabled></a>
+        {% else %}
+        <a href='javascript:void(0);' onclick="on_move_page(event);"><input type="button" name="next" value="-&gt;"></a>
+        {% endif %}
+
+        {% if p != result.total %}
+        <a href='javascript:void(0);' onclick="on_move_page(event);"><input type="button" name="last" value="-&Gt;"></a>
+        {% endif %}
+
+    </div>
+{% else %}
+    {{result.data[0]}}
 {% endif %}
-
-<div>
-    {% set s = (result.page / 10) | int %}
-    {% set e = (s * 10) + 11 %}
-    {% set p = result.page + 1 %}
-    {{result.page, s, e, p}}
     
-    {% if p == 0 %}
-    <a href='javascript:void(0);' onclick="on_move_page();"><input type="button" value="<-" disabled></a>
-    {% else %}    
-    <a href='javascript:void(0);' onclick="on_move_page(event);"><input type="button" name="previous" value="<-"></a>
-    {% endif %}
     
-    {% for i in range(s * 10 + 1, e)%}
-    {% if i == p %}
-    <span>현재 페이지 -> </span>
-    {% endif %}
-    <a href='javascript:void(0);' onclick="on_move_page(event);"><input type="button" value="{{i}}"></a>
-    {% endfor %}
     
-    {% if p == result.count %}
-    <a href='javascript:void(0);' onclick="on_move_page();"><input type="button" value="----" disabled></a>
-    {% else %}
-    <a href='javascript:void(0);' onclick="on_move_page(event);"><input type="button" name="next" value="->"></a>
-    {% endif %}
-
-
-</div>
 {% endblock body %}
 
 {% block script %}
@@ -94,26 +106,48 @@ function on_move_page(page){
     console.log(">>>>>>>>>> event.currentTarget from  ", event.currentTarget.name);
     console.log(">>>>>>>>>> event.srcElement from  ", event.srcElement.value);
     console.log("on_move_page()on_move_page()on_move_page()on_move_page() ", page);
+    var _last = {{(result.total - 1)|int}};
 
     if (event.target.name == "next"){
         _param = location.search;
         console.log("_param_param_param_param_param_param_param ", _param)
         if(!_param){
-            location.href = location.origin + location.pathname + "?offset=1"
+            location.href = location.origin + location.pathname + "?offset=10";
         }
-        var _present_offset = _param.match(/offset=(.*[0-9])/)[1];
-        _present_offset += 1;
-        _param = _param.replace(_param.match(/offset=.*[0-9]/)[0], "offset="+_present_offset);
+        var _present_offset = _param.match(/offset=([0-9]*)/)[1];
+        _present_offset *= 1;
+        console.log("_present_offset_present_offset_present_offset_present_offset ", _present_offset);
+        _present_offset = Math.ceil(++_present_offset / 10) * 10;
+        if(_present_offset >= _last){
+            _present_offset = _last;
+        }
+        _param = _param.replace(_param.match(/offset=[0-9]*/)[0], "offset="+_present_offset);
         location.href = location.origin + location.pathname + _param;
-        
     }else if(event.target.name == "previous"){
         _param = location.search;
-        var _present_offset = _param.match(/offset=(.*[0-9])/)[1];
+        var _present_offset = _param.match(/offset=([0-9]*)/)[1];
+        _present_offset = Math.floor(_present_offset / 10) * 10;
+        --_present_offset;
+        if(_present_offset <= 0){
+            _present_offset = 0;
+        }
+        _param = _param.replace(_param.match(/offset=[0-9]*/)[0], "offset="+_present_offset);
+        location.href = location.origin + location.pathname + _param;
+    }else if(event.target.name == "last"){
+        _param = location.search;
+        _param = _param.replace(_param.match(/offset=[0-9]*/)[0], "offset="+_last);
+        location.href = location.origin + location.pathname + _param;
+    }else if(event.target.name == "first"){
+        _param = location.search;
+        _param = _param.replace(_param.match(/offset=[0-9]*/)[0], "offset=0");
+        location.href = location.origin + location.pathname + _param;
+    }else{
+        _param = location.search;
+        var _present_offset = event.target.value;
         _present_offset -= 1;
-        _param = _param.replace(_param.match(/offset=.*[0-9]/)[0], "offset="+_present_offset);
+        _param = _param.replace(_param.match(/offset=[0-9]*/)[0], "offset="+_present_offset);
         location.href = location.origin + location.pathname + _param;
     }
-    
 }
 
 
