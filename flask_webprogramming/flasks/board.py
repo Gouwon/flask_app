@@ -1,4 +1,7 @@
 from math import ceil
+from pprint import pprint
+import json
+
 from flask import Blueprint, render_template, make_response, jsonify, \
                 request, session, redirect, url_for, Response, request
 from jinja2 import Markup
@@ -6,11 +9,8 @@ from sqlalchemy import sql
 import sqlalchemy
 from .models import Post, QuertyConstructor
 from .init_db import db_session
-import json
 from .decorators import login_required, _jsonify
 from .utils import string_to_dict, params_to_query, query_db
-
-from pprint import pprint
 
 
 bp = Blueprint('bd', __name__, url_prefix='/board')
@@ -27,15 +27,12 @@ def get_posts():
     search_key_set = set(search_preset.keys())
 
     params = p_to_j(**request.args)
-    print('\n>>>>>>>>>>> data ', params)
     data_key_set = set(params.keys())
 
     update_keys = search_key_set - data_key_set
     
     for update_key in update_keys:
         data[update_key] = search_preset[update_key]
-
-    pprint(params)
 
     _offset = int(params['offset']) * int(params['limit'])
 
@@ -56,8 +53,6 @@ def get_posts():
     result = None if len(posts) == 0 else "OK"
     data = ["등록된 글이 없습니다."] if len(posts) == 0 else posts
     
-    pprint(data)
-
     return json.dumps({
         'result': result,
         'data': data, 

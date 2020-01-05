@@ -102,3 +102,24 @@ for w in v:
  'order': 'desc',
  'order_by': 'registdt',
  'search': ''}
+
+class F():
+    def __init__(self):
+        self.data = [None]
+
+f = F()
+l = f.data and len(f.data) or 0
+print(l)
+
+s = zip([1, 2, 3], [4, 5, 6])
+for ss in s:
+    print(ss)
+
+hol = jjak = 0
+print(hol, jjak)
+hol = 1
+print(hol, jjak)
+
+import datetime
+print(datetime.datetime.now())
+print(datetime.datetime.today())

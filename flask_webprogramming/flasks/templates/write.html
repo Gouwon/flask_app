@@ -9,16 +9,22 @@
 
 {% if result.result != None %}
     <form action="" id="texteditor" name="texteditor" method='POST'>
+        <label for="head">제 목 | </label>
         <input type="text" id="head" name="head" value="{{result.head}}">
+        <br />
         <textarea name="content" id="content" cols="30" rows="10">{{result.content}}</textarea>
         <input type="hidden" name="postno" id="postno" value="{{result.id}}">
+        <br />
         <input type="button" value="post_update" name="post_update" onclick="gw(event)">
         <input type="button" value="post_delete" name="post_delete" onclick="gw(event)">
     </form>
 {% else %}
     <form action="http://localhost:5000/w" id="texteditor" name="texteditor" method='POST'>
+        <label for="head">제 목 | </label>
         <input type="text" id="head" name="head">
+        <br />
         <textarea name="content" id="content" cols="30" rows="10"></textarea>
+        <br />
         <input type="button" value="post_create" name="post_create" onclick="gw(event)">
     </form>
 {% endif %}
