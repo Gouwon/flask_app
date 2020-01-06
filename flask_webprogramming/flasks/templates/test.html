@@ -7,6 +7,19 @@
 {% block body %}
 <p>This is test.html</p>
 
+<label for="test">타임머신 에디터</label>
+<br />
+<textarea name="test" id="test" cols="30" rows="10"></textarea>
+<div id="count">
+    <span id="present">0</span> / <span id="total">0</span>
+</div>
+<input type="button" name="pre" value="이전" onclick="test(event)">
+<input type="button" name="next" value="다음" onclick="test(event)">
+<input type="button" name="tmpSave" value="임시저장" onclick="test(event)">
+
+
+
+
 {% for i in range(0,5) %}
 <p>{{i}}</p>
 {% endfor %}
@@ -39,6 +52,65 @@ if(res['result']=='로그인이 필요합니다.'){
 {% endblock body %}
 
 {% block script %}
+<script>
+var tmp_save_list = [];
+function test(e) {
+    var target = event.target.name;
+
+    if(target == 'tmpSave'){
+        (function (){
+            var tmp_content = document.getElementById('test').value;
+            if(!tmp_content){
+                alert('저장할 내용이 없습니다.');
+            }else{
+            var _present = document.getElementById('present').innerText;
+            _present *= 1;
+            if(tmp_save_list.length >= 5){
+                tmp_save_list.splice(0,1)
+            }       
+            tmp_save_list.push(tmp_content);
+            var _total = tmp_save_list.length;
+            if(_total < 6){
+                ++_present
+                if(_present > 5){
+                    _present = 5;
+                }
+                document.getElementById('present').innerText = _present;
+                document.getElementById('total').innerText = _total;
+            }
+        }
+        })()
+    }else{
+        var _present = document.getElementById('present').innerText;
+        _present *= 1;
+        if(target == 'pre'){
+            --_present;
+            if(_present == 0){
+                alert("이전 버전이 없습니다.")
+            }else{
+                    if(_present < 0){
+                    _present = 1;
+                }
+                document.getElementById('test').value = tmp_save_list[_present - 1];
+                document.getElementById('present').innerText = _present;
+            }
+        }else{
+            ++_present;
+            if(_present > (tmp_save_list.length)){
+                alert("다음 버전이 없습니다.")
+            }else{
+                if(_present == 5){
+                    _present = 5;
+                }
+                document.getElementById('test').value = tmp_save_list[_present - 1];
+                document.getElementById('present').innerText = _present;
+            }
+        }
+    }
+}
+</script>
+
+
 <script>
 function gw(){
     var data = { "head" : document.getElementById('head').value,

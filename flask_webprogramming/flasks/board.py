@@ -5,6 +5,7 @@ import json
 from flask import Blueprint, render_template, make_response, jsonify, \
                 request, session, redirect, url_for, Response, request
 from jinja2 import Markup
+from werkzeug.routing import BaseConverter
 from sqlalchemy import sql
 import sqlalchemy
 from .models import Post, QuertyConstructor

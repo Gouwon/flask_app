@@ -1,12 +1,13 @@
 import os
 import errno
+import logging
 from uuid import uuid4
 from collections import MutableMapping
 from datetime import datetime, timedelta
 
 import sqlite3
 import pickle
-from flask import Flask, session, render_template
+from flask import Flask, session, render_template, url_for
 from flask.sessions import SessionInterface, SessionMixin
 from werkzeug.datastructures import CallbackDict
 from pymongo import MongoClient
@@ -15,6 +16,31 @@ from beaker.middleware import SessionMiddleware
 
 app = Flask(__name__)
 app.debug = True
+app.debug_log_format = '%(levelname)s in %(model)s [%(lineno)d]: %(massage)s'
+
+file_log_format = logging.Formatter('%(levelname)-8s %(message)s')
+# file_logger = logging.FileHandler('flask_webprogramming.log')
+file_logger = logging.FileHandler(
+    'flask_webprogramming.log',
+    mode='a',
+    encoding='utf-8',
+    delay=False
+)
+# log file under certain bytes
+# rotating_file_logger = logging.handlers.RotatingFileHandler(
+#     filename='flask_webprogramming.log',
+#     mode='a',
+#     maxBytes=10485760,  # 10MB = 1MB * 1024 * 1024 = 10485760
+#     backupCount=5,  # once reached maxBytes, file will be splited untile 5.
+#     encoding='utf-8',
+#     delay=False
+# )
+file_logger.setFormatter(file_log_format)
+# app.logger.addHandler(file_logger)
+
+# setting log level display
+# app.logger.setLevel(logging.INFO)
+# handler.setLevel(logging.warning)
 
 from . import routers
 from . import auth
@@ -25,6 +51,37 @@ app.register_blueprint(board.bp)
 
 from .init_db import db_session, init_db
 from .models import FlaskSession
+
+
+@app.route('/log')
+def logger():
+    # SMTP log handler
+    if app.debug:
+        from logging.handlers import SMTPHandler
+
+        ADMINS = ['']
+        mail_handler = SMTPHandler(
+            mailhost='localhost',
+            fromaddr='seyosa5674@onmail.top',
+            toaddrs=['jskd2938@gmail.com'],
+            subject='Application Error'
+        )
+        # if smtp server requires user identity
+        # mail_handler = SMTPHandler(
+        #     mailhost=('smtp.gmail.com', 587), #if smtp port isn't 25.
+        #     fromaddr='seyosa5674@onmail.top',
+        #     toaddrs=['jskd2938@gmail.com'],
+        #     subject='Mail Host',
+        #     credentials=('jskd2938', 'password'),
+        #     []  # gmail uses tls so adding an empty list as 6th argument.
+        # )
+        mail_handler.setFormatter(logging.Formatter(
+        '[%(asctime)s] %(levelname)s in %(module)s: %(message)s'
+        ))
+        # app.logger.addHandler(mail_handler)
+
+    app.logger.debug('>>>>> DEBUG 메세지를 출력합니다.')
+    return '콘솔을 확인하여 주시기 바랍니다.'
 
 # <-------------------------- session using beaker --------------------------->
 session_opts = {
@@ -412,3 +469,4 @@ def beforeFirstRequest():
 def teardownAppcontext(exception):
     print('>>>>> teardown_appcontext :: ', exception)
     db_session.remove() # remove used db_session
+
