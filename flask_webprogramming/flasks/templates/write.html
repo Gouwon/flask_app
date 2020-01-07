@@ -13,6 +13,12 @@
         <input type="text" id="head" name="head" value="{{result.head}}">
         <br />
         <textarea name="content" id="content" cols="30" rows="10">{{result.content}}</textarea>
+        <div id="count">
+            <span id="present">0</span> / <span id="total">0</span>
+        </div>
+        <input type="button" name="pre" value="이전" onclick="gw(event)">
+        <input type="button" name="next" value="다음" onclick="gw(event)">
+        <input type="button" name="tmpSave" value="임시저장" onclick="gw(event)">
         <input type="hidden" name="postno" id="postno" value="{{result.id}}">
         <br />
         <input type="button" value="post_update" name="post_update" onclick="gw(event)">
@@ -32,20 +38,72 @@
 
 {% block script %}
 <script>
+var tmp_save_list = [];
+
 function gw(event) {
     console.log(">>>>>>>>>> event.target from  ", event.target.name);
     console.log(">>>>>>>>>> event.srcElement from  ", event.srcElement.name);
     console.log(">>>>>>>>>> event.currentTarget from  ", event.currentTarget.name);
+    var target = event.target.name;
 
     _postno = document.getElementById('postno').value;
-    if(event.target.name == 'post_update'){
+    if(target == 'post_update'){
         document.getElementById('texteditor').action = '/board/post/u/'.concat(_postno);
         document.getElementById('texteditor').submit();
-    }else{
+    }else if(target == 'post_delete'){
         _isYes = window.confirm('Are you sure?')
         if(_isYes){
             document.getElementById('texteditor').action = '/board/post/d/'.concat(_postno);
             document.getElementById('texteditor').submit();
+        }
+    }else if(target == 'tmpSave'){
+        (function (){
+            var tmp_content = document.getElementById('content').value;
+            if(!tmp_content){
+                alert('저장할 내용이 없습니다.');
+            }else{
+            var _present = document.getElementById('present').innerText;
+            _present *= 1;
+            if(tmp_save_list.length >= 5){
+                tmp_save_list.splice(0,1)
+            }       
+            tmp_save_list.push(tmp_content);
+            var _total = tmp_save_list.length;
+            if(_total < 6){
+                ++_present
+                if(_present > 5){
+                    _present = 5;
+                }
+                document.getElementById('present').innerText = _present;
+                document.getElementById('total').innerText = _total;
+            }
+        }
+        })()
+    }else{
+        var _present = document.getElementById('present').innerText;
+        _present *= 1;
+        if(target == 'pre'){
+            --_present;
+            if(_present == 0){
+                alert("이전 버전이 없습니다.")
+            }else{
+                    if(_present < 0){
+                    _present = 1;
+                }
+                document.getElementById('content').value = tmp_save_list[_present - 1];
+                document.getElementById('present').innerText = _present;
+            }
+        }else{
+            ++_present;
+            if(_present > (tmp_save_list.length)){
+                alert("다음 버전이 없습니다.")
+            }else{
+                if(_present == 5){
+                    _present = 5;
+                }
+                document.getElementById('content').value = tmp_save_list[_present - 1];
+                document.getElementById('present').innerText = _present;
+            }
         }
     }
 }
