@@ -2,24 +2,28 @@
 
 {% block title %}
 <title>Write</title>
+<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+<link href="https://cdn.jsdelivr.net/npm/summernote@0.8.15/dist/summernote-lite.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.15/dist/summernote-lite.min.js"></script>
+
 {% endblock title %}
 
 {% block body %}
 <p>This is Write.html</p>
 
-{% if result.result != None %}
+{% if result.result == "OK" %}
     <form action="" id="texteditor" name="texteditor" method='POST'>
         <label for="head">제 목 | </label>
-        <input type="text" id="head" name="head" value="{{result.head}}">
+        <input type="text" id="head" name="head" value="{{result.data.head}}">
         <br />
-        <textarea name="content" id="content" cols="30" rows="10">{{result.content}}</textarea>
+        <textarea name="content" id="content" cols="30" rows="10">{{result.data.content}}</textarea>
         <div id="count">
             <span id="present">0</span> / <span id="total">0</span>
         </div>
         <input type="button" name="pre" value="이전" onclick="gw(event)">
         <input type="button" name="next" value="다음" onclick="gw(event)">
         <input type="button" name="tmpSave" value="임시저장" onclick="gw(event)">
-        <input type="hidden" name="postno" id="postno" value="{{result.id}}">
+        <input type="hidden" name="postno" id="postno" value="{{result.data.id}}">
         <br />
         <input type="button" value="post_update" name="post_update" onclick="gw(event)">
         <input type="button" value="post_delete" name="post_delete" onclick="gw(event)">
@@ -30,9 +34,41 @@
         <input type="text" id="head" name="head">
         <br />
         <textarea name="content" id="content" cols="30" rows="10"></textarea>
+        <div id="count">
+            <span id="present">0</span> / <span id="total">0</span>
+        </div>
+        <input type="button" name="pre" value="이전" onclick="gw(event)">
+        <input type="button" name="next" value="다음" onclick="gw(event)">
+        <input type="button" name="tmpSave" value="임시저장" onclick="gw(event)">
+        <input type="hidden" name="postno" id="postno" value="{{result.id}}">
         <br />
+
         <input type="button" value="post_create" name="post_create" onclick="gw(event)">
+
     </form>
+
+    <div id="summernote"></div>
+    <script>
+      $('#summernote').summernote({
+        placeholder: 'Hello stand alone ui',
+        tabsize: 2,
+        height: 120,
+        toolbar: [
+          ['style', ['style']],
+          ['font', ['bold', 'underline', 'clear']],
+          ['color', ['color']],
+          ['para', ['ul', 'ol', 'paragraph']],
+          ['table', ['table']],
+          ['insert', ['link', 'picture', 'video']],
+          ['view', ['fullscreen', 'codeview', 'help']]
+        ]
+      });
+    //   get content in summernote
+    //   var markupStr = $('#summernote').summernote('code');
+    //   set content to summernote
+    //   $('#summernote').summernote('code', markupStr);
+    </script>
+
 {% endif %}
 {% endblock body %}
 

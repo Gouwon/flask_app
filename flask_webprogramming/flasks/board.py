@@ -147,6 +147,9 @@ def draw_write(postno=None):
     if postno is not None:
         post = read_post(postno=postno)
         post = json.loads(post, encoding='utf8')
-        return render_template('write.html', result=post)
+        return render_template('write.html', result={
+            'result': "OK",
+            'data': post
+        })
     return render_template('write.html', result={'resutl': None})
     
