@@ -38,6 +38,17 @@ class User(Base):
     def _jsonify(self):
         return json.dumps({"username" : self.username, "userid" : self.userid})
     
+    def _getjson(self):
+        return {"username" : self.username, "userid" : self.userid}
+    
+    def __setattr__(self, name, value):
+        if name == 'password':
+            value = func.sha2(value, 256)
+        return super().__setattr__(name, value)
+
+    def __call__(self, input_password):
+        self.password = func.sha2(input_password, 236)
+    
 class Post(Base):
     __tablename__ = 'Posts'
     id = Column(Integer, primary_key=True)

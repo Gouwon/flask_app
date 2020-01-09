@@ -43,6 +43,7 @@ file_logger.setFormatter(file_log_format)
 # handler.setLevel(logging.warning)
 
 from . import routers
+from . import restful
 from . import auth
 app.register_blueprint(auth.bp)
 
