@@ -50,3 +50,5 @@ class RESTfulTest(Resource):
         
 # parser.add_argument('data')
 api.add_resource(RESTfulTest, '/restful', '/restful/<userid>')
+
+# curl -H "Content-type: application/json" -d '{"data":{"name":"kim", "password":"1", "etc":"나는 누구인가?"}}' -v -X POST http://localhost:5000/restful/2
