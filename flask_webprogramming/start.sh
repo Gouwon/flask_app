@@ -3,7 +3,7 @@
 
 # to activate virtual environment
 
-. ./venv/venv/bin/activate
+source ./venv/bin/activate
 python ./start_flask.py
 
 # to exit vitual environment

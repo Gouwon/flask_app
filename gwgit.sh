@@ -1,8 +1,8 @@
 #!/bin/sh
 
 #DATE=`date +%Y-%m-%d" "%H:%M`
-DATE=`date +%Y-%m-%d`
-MSG="$DATE lesson"
+DATE=`date +%YY%mm%dd`
+MSG="$DATE"
 if [ $# -gt 0 ]; then
     MSG="$1"
 fi

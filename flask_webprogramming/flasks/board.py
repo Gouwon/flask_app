@@ -33,7 +33,7 @@ def get_posts():
     update_keys = search_key_set - data_key_set
     
     for update_key in update_keys:
-        data[update_key] = search_preset[update_key]
+        params[update_key] = search_preset[update_key]
 
     _offset = int(params['offset']) * int(params['limit'])
 

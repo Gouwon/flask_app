@@ -44,6 +44,7 @@ file_logger.setFormatter(file_log_format)
 
 from . import routers
 from . import restful
+from . import jwt
 from . import auth
 app.register_blueprint(auth.bp)
 
