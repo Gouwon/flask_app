@@ -7,12 +7,16 @@ from datetime import datetime, timedelta
 
 import sqlite3
 import pickle
-from flask import Flask, session, render_template, url_for
+from flask import Flask, session, render_template, url_for, request, \
+                make_response
 from flask.sessions import SessionInterface, SessionMixin
 from werkzeug.datastructures import CallbackDict
 from pymongo import MongoClient
 from redis import Redis
 from beaker.middleware import SessionMiddleware
+
+from .decorators import _jsonify
+
 
 app = Flask(__name__)
 app.debug = True
@@ -45,6 +49,23 @@ file_logger.setFormatter(file_log_format)
 from . import routers
 from . import restful
 from . import jwt
+# @app.route('/t', methods=['GET', 'POST'])
+# def ttt():
+#     if request.method == 'POST':
+#         # print('\n\n\n\n==============')
+#         # print(type(jwt.jwt))
+#         # print('\n\n\n\n==============')
+#         # print(jwt.jwt)
+#         # print(str(jwt.jwt))
+
+#         # print('\n\n\n==============')
+
+#         # return jwt.jwt, 201, {'Content-Type': 'application/json'}
+#         return {
+#     "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZGVudGl0eSI6MSwiaWF0IjoxNDQ0OTE3NjQwLCJuYmYiOjE0NDQ5MTc2NDAsImV4cCI6MTQ0NDkxNzk0MH0.KPmI6WSjRjlpzecPvs3q_T3cJQvAgJvaQAPtk1abC_E"
+# }, 201, {'Content-Type': 'application/json'}
+#     return "TTT"
+
 from . import auth
 app.register_blueprint(auth.bp)
 
