@@ -4,6 +4,7 @@ from functools import wraps
 from flask import session, request, url_for, make_response, \
                 redirect, render_template, flash
 from werkzeug.contrib.cache import RedisCache
+from flask_jwt_extended import JWTManager, verify_jwt_in_request, create_access_token, get_jwt_claims
 from _datetime import datetime
 
 
@@ -91,3 +92,4 @@ def _jsonify(f):
         result = make_response(json.dumps(r, ensure_ascii=False).encode("utf8"))
         return result
     return inner
+

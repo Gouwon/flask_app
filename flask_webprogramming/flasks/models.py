@@ -31,6 +31,7 @@ class User(Base):
         self.username = username
         self.userid = userid
         self.password = func.sha2(password, 256) if make_sha else password
+        self.authority = 5
     
     def __repr__(self):
         return '<User %r %r>' % (self.username, self.password)
