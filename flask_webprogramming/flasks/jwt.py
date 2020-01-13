@@ -1,8 +1,9 @@
 from flask import Flask, jsonify, request
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token, \
-    get_jwt_identity, jwt_optional, get_jwt_claims
+    get_jwt_identity, jwt_optional, get_jwt_claims, verify_jwt_in_request
 from . import app
 from .decorators import _jsonify
+from functools import wraps
 
 # Setup the Flask-JWT-Extended extension
 app.config['JWT_SECRET_KEY'] = 'super-secret'  # Change this!
@@ -32,7 +33,9 @@ def ttt():
     # access_token = create_access_token(identity=username)
 
         # Create an example UserObject
-    user = UserObject(username='test', roles=['foo', 'bar'])
+    # user = UserObject(username='test', roles=['foo', 'bar'])
+    user = UserObject(username='foo', roles=['foo', 'bar'])
+
 
     # We can now pass this complex object directly to the
     # create_access_token method. This will allow us to access
@@ -122,6 +125,67 @@ def add_role_to_access_token(user):
 # of the access token should be.
 @jwt.user_identity_loader
 def user_identity_lookup(user):
-    print(">>>>> user_identity_lookup\n", user, "\n=================")
+    print(">>>>> user_identity_lookup\n", user.username, "\n=================")
     return user.username
 
+users_to_roles = {
+    'foo': ['admin'],
+    'bar': ['peasant'],
+    'baz': ['peasant']
+}
+
+@jwt.user_loader_callback_loader
+def user_loader_callback(identity):
+    print("\n\n\n>>>> user_loader_callback()user_loader_callback() ", identity)
+    if identity not in users_to_roles:
+        return None
+
+    return UserObject(
+        username=identity,
+        roles=users_to_roles[identity]
+    )
+
+@jwt.user_loader_error_loader
+def custom_user_loader_error(identity):
+    print("\n\n\n>>>> custom_user_loader_error()custom_user_loader_error() ", identity)
+    ret = {
+        "msg": "User {} not found".format(identity)
+    }
+    return jsonify(ret), 404
+
+@app.route('/admin-only', methods=['GET'])
+@jwt_required
+def admin_only():
+    print("\n\n\nadmin_only admin_only ")
+    if 'admin' not in current_user.roles:
+        return jsonify({"msg": "Forbidden"}), 403
+    else:
+        return jsonify({"msg": "don't forget to drink your ovaltine"})
+
+def admin_required(fn):
+    print("=======\nadmin_required decorator before wraps\n\n=========== fn", fn)
+    @wraps(fn)
+    def wrapper(*args, **kwargs):
+        print("=======\wrapperwrapperwrapper inside a wrapper\n\n===========")
+        verify_jwt_in_request()
+        claims = get_jwt_claims()
+        print("claimsclaimsclaims ", claims)
+        if claims['roles'] != 'admin':
+            return jsonify(msg='Admins only!'), 403
+        else:
+            return fn(*args, **kwargs)
+    return wrapper
+
+@jwt.user_claims_loader
+def add_claims_to_access_token(identity):
+    print("=======\nadd_claims_to_access_token\n\n===========", identity.username, identity.roles)
+    if identity.username == 'foo':
+        return {'roles': 'admin'}
+    else:
+        return {'roles': 'peasant'}
+
+@app.route('/admin_only', methods=['GET'])
+@admin_required
+def admin_only_approach():
+    print("\n\n\nadmin_only_approachadmin_only_approach()")
+    return jsonify(secret_message="go banana!") 
