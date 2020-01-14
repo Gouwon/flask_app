@@ -89,37 +89,54 @@ data = {"criteria": "head", "order": "desc", "order_by": "head", "limit": "20", 
 key_set = set(data.keys())
 # print(key_set, type(key_set), type(data.keys()))
 # print("limit" in key_set)
-s = set(["limit", "criteria"])
-v = key_set - s
-print(v, type(v))
-for w in v:
-    print(w)
-    print(data[w])
+# s = set(["limit", "criteria"])
+# v = key_set - s
+# print(v, type(v))
+# for w in v:
+#     print(w)
+#     print(data[w])
 
-    {'criteria': 'head',
- 'limit': '20',
- 'offset': '0',
- 'order': 'desc',
- 'order_by': 'registdt',
- 'search': ''}
+#     {'criteria': 'head',
+#  'limit': '20',
+#  'offset': '0',
+#  'order': 'desc',
+#  'order_by': 'registdt',
+#  'search': ''}
 
-class F():
-    def __init__(self):
-        self.data = [None]
+# class F():
+#     def __init__(self):
+#         self.data = [None]
 
-f = F()
-l = f.data and len(f.data) or 0
-print(l)
+# f = F()
+# l = f.data and len(f.data) or 0
+# print(l)
 
-s = zip([1, 2, 3], [4, 5, 6])
-for ss in s:
-    print(ss)
+# s = zip([1, 2, 3], [4, 5, 6])
+# for ss in s:
+#     print(ss)
 
-hol = jjak = 0
-print(hol, jjak)
-hol = 1
-print(hol, jjak)
+# hol = jjak = 0
+# print(hol, jjak)
+# hol = 1
+# print(hol, jjak)
 
-import datetime
-print(datetime.datetime.now())
-print(datetime.datetime.today())
+# import datetime
+# print(datetime.datetime.now())
+# print(datetime.datetime.today())
+
+# kw = {'question_id': 1}
+
+# def f(**kwargs):
+#     print(kwargs, type(kwargs))
+#     print(question_id)
+
+# f(**kw)
+
+def personal_info(name, age, address):
+    print('이름: ', name)
+    print('나이: ', age)
+    print('주소: ', address)
+
+x = {'name': '홍길동', 'age': 30, 'address': '서울시 용산구 이촌동'}
+
+personal_info(**x)

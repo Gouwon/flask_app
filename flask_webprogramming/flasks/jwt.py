@@ -1,6 +1,7 @@
 from flask import Flask, jsonify, request
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token, \
-    get_jwt_identity, jwt_optional, get_jwt_claims, verify_jwt_in_request
+    get_jwt_identity, jwt_optional, get_jwt_claims, verify_jwt_in_request,\
+    jwt_refresh_token_required, create_refresh_token, get_current_user
 from . import app
 from .decorators import _jsonify
 from functools import wraps
@@ -43,7 +44,9 @@ def ttt():
     # function, and get the identity of this object from the
     # user_identity_loader function.
     access_token = create_access_token(identity=user)
-    ret = {'access_token': access_token}
+    ret = {'access_token': access_token,
+        'refresh_token': create_refresh_token(identity=user),
+    }
 
     return jsonify(ret), 200
 
@@ -125,7 +128,7 @@ def add_role_to_access_token(user):
 # of the access token should be.
 @jwt.user_identity_loader
 def user_identity_lookup(user):
-    print(">>>>> user_identity_lookup\n", user.username, "\n=================")
+    print(">>>>> user_identity_lookup\n", user, "\n=================")
     return user.username
 
 users_to_roles = {
@@ -136,9 +139,11 @@ users_to_roles = {
 
 @jwt.user_loader_callback_loader
 def user_loader_callback(identity):
-    print("\n\n\n>>>> user_loader_callback()user_loader_callback() ", identity)
+    print("\n\n\n>>>> user_loader_callback()user_loader_callback() ", identity, type(identity))
     if identity not in users_to_roles:
         return None
+    else:
+        print('>>>> user_loader_callback()user_loader_callback() found!!!')
 
     return UserObject(
         username=identity,
@@ -178,6 +183,7 @@ def admin_required(fn):
 
 @jwt.user_claims_loader
 def add_claims_to_access_token(identity):
+    print('\n\n\n>>>>> identity ', identity)
     print("=======\nadd_claims_to_access_token\n\n===========", identity.username, identity.roles)
     if identity.username == 'foo':
         return {'roles': 'admin'}
@@ -189,3 +195,14 @@ def add_claims_to_access_token(identity):
 def admin_only_approach():
     print("\n\n\nadmin_only_approachadmin_only_approach()")
     return jsonify(secret_message="go banana!") 
+
+@app.route('/refresh', methods=['POST'])
+@jwt_refresh_token_required
+@_jsonify
+def refresh():
+    current_user = get_current_user()
+    print("\n\n\n>>>>> current_user ", current_user, type(current_user))
+    ret = {
+        'access_token': create_access_token(identity=current_user)
+    }
+    return ret
