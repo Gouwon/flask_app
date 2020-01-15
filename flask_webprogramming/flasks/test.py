@@ -84,9 +84,9 @@
 
 # save(lst)
 
-data = {"criteria": "head", "order": "desc", "order_by": "head", "limit": "20", "offset": "20"}
+# data = {"criteria": "head", "order": "desc", "order_by": "head", "limit": "20", "offset": "20"}
 
-key_set = set(data.keys())
+# key_set = set(data.keys())
 # print(key_set, type(key_set), type(data.keys()))
 # print("limit" in key_set)
 # s = set(["limit", "criteria"])
@@ -128,15 +128,104 @@ key_set = set(data.keys())
 
 # def f(**kwargs):
 #     print(kwargs, type(kwargs))
-#     print(question_id)
+#     print('이름: ', name)
+#     print('나이: ', age)
+#     print('주소: ', address)
 
-# f(**kw)
+# def ff(name, **kwargs):
+#     print('이름: ', name)
+#     s = kwargs
+#     print(kwargs, '\n\n====111')
+#     print(s, '\n\n====111')
+#     def ffff(**kwargs):
+#         if(kwargs):
+#             print(kwargs, '\n\n====2222')
+#         print(s, '\n\n====222')
+#     return ffff(**kwargs)
+    # print(first, '\n\n====')
 
-def personal_info(name, age, address):
-    print('이름: ', name)
-    print('나이: ', age)
-    print('주소: ', address)
+# def fff(name, *args):
+#     print('이름: ', name)
+#     print(args, '\n\n====')
 
-x = {'name': '홍길동', 'age': 30, 'address': '서울시 용산구 이촌동'}
+    
+# dd = {'name': 'kim', 'first':1}
+# ff(name='kim')
+# ff(**dd)
+# ddd = {'name': 'kim'}
+# fff(*[1,2,3],**ddd)
+## fff(**ddd, *[1,2,3])
+# fff('kim', *[1,2,3])
 
-personal_info(**x)
+
+# def personal_info(name, age, address):
+#     print('이름: ', name)
+#     print('나이: ', age)
+#     print('주소: ', address)
+
+# x = {'name': '홍길동', 'age': 30, 'address': '서울시 용산구 이촌동'}
+# xx = [1,2,3]
+# personal_info(**x)
+# f(**x)
+
+
+from functools import wraps
+
+
+
+
+
+# def decorator_function(original_function): #1, #4 
+#     s = 3
+#     def wrapper_function(): #5 #8 
+#         print(s)
+#         return original_function() #9 
+#     return wrapper_function #6 
+ 
+# # def display(): #2, #10 
+# #     print("display 함수가 실행됐습니다") #11 
+
+# def index():
+#     print('>>>>>>> v ', locals(), vars(decorator_function))
+
+# # decorated_display = decorator_function(display)  #3 display 함수를 젇날 
+# # decorated_display = decorator_function(index)
+# # decorated_display() #7 
+
+# # print(vars(decorator_function))
+
+# print(dir(index), type(index))
+# for attr in dir(index):
+#     print("%s of index() : %s" % (attr, getattr(index, attr)))
+
+# index()
+
+
+def f1(): #outer function
+    f1.a = 1
+    def f2(): #outer function
+        print (f1.a) #prints 2
+    f2()
+    print (f1.a) #prints 2
+
+# f1()
+
+def f():
+    print("ssss", locals(), f1.s)
+    
+def f1(a):
+    f1.s = 1000
+    print(f1.s, locals())
+
+    def f2(b):
+        print(f1.s, locals())
+        f()
+        return a+b
+    return f2
+a = f1(1)
+# print(type(f1))
+# b = f1(100)
+
+print (a(2))
+print(type((1,2)))
+# print (b(2))

@@ -1,2 +1,3 @@
 ./__pycache__
-./flask/__pycache__
+./flasks/__pycache__
+*.pyc
