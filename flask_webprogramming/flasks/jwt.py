@@ -1,7 +1,7 @@
 from flask import Flask, jsonify, request
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token, \
     get_jwt_identity, jwt_optional, get_jwt_claims, verify_jwt_in_request,\
-    jwt_refresh_token_required, create_refresh_token, get_current_user
+    jwt_refresh_token_required, create_refresh_token, get_current_user, fresh_jwt_required
 from . import app
 from .decorators import _jsonify
 from functools import wraps
@@ -202,7 +202,34 @@ def admin_only_approach():
 def refresh():
     current_user = get_current_user()
     print("\n\n\n>>>>> current_user ", current_user, type(current_user))
+    # ret = {
+    #     'access_token': create_access_token(identity=current_user)
+    # }
+    # generate non-fresh access token
     ret = {
-        'access_token': create_access_token(identity=current_user)
+        'access_token': create_access_token(identity=current_user, fresh=False)
     }
     return ret
+
+# making fresh token by logging in.
+@app.route('/fresh_login', methods=['POST'])
+@_jsonify
+def fresh_login():
+    # username = 'test'
+    user = UserObject('bar', 'peasant')
+    # password = 'test'
+    if user.username != 'bar':
+        return {'msg': 'Bad username or password'}, 401
+    ret = {
+        'access_token': create_access_token(identity=user, fresh=True)
+    }
+    return ret
+    
+# Only fresh JWTs can access this endpoint
+@app.route('/protected_fresh', methods=['GET'])
+@fresh_jwt_required
+@_jsonify
+def protected_fresh():
+    username = get_jwt_identity()
+    print('\n\n\n>>>>>> protected_freshprotected_fresh username ', username)
+    return {'fresh_logged_in_as': username}
