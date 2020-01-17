@@ -1,10 +1,14 @@
+from datetime import datetime
+from functools import wraps
+
 from flask import Flask, jsonify, request
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token, \
     get_jwt_identity, jwt_optional, get_jwt_claims, verify_jwt_in_request,\
     jwt_refresh_token_required, create_refresh_token, get_current_user, fresh_jwt_required
+
 from . import app
 from .decorators import _jsonify
-from functools import wraps
+
 
 # Setup the Flask-JWT-Extended extension
 app.config['JWT_SECRET_KEY'] = 'super-secret'  # Change this!
@@ -233,3 +237,12 @@ def protected_fresh():
     username = get_jwt_identity()
     print('\n\n\n>>>>>> protected_freshprotected_fresh username ', username)
     return {'fresh_logged_in_as': username}
+
+@app.route('/create_dev_token', methods=['POST'])
+@jwt_required
+@_jsonify
+def create_dev_token():
+    current_user = get_current_user()
+    expires = datetime.timedelta(days=365)
+    token = create_access_token(current_user, expires_delta=expires)
+    return {'token': token}
