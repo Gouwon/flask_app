@@ -2,9 +2,10 @@ from datetime import datetime
 from functools import wraps
 
 from flask import Flask, jsonify, request
-from flask_jwt_extended import JWTManager, jwt_required, create_access_token, \
+from flask_jwt_extended import (JWTManager, jwt_required, create_access_token, \
     get_jwt_identity, jwt_optional, get_jwt_claims, verify_jwt_in_request,\
-    jwt_refresh_token_required, create_refresh_token, get_current_user, fresh_jwt_required
+    jwt_refresh_token_required, create_refresh_token, get_current_user, fresh_jwt_required, token_in_blacklist_loader,
+    get_raw_jwt, set_access_cookies, set_refresh_cookies, unset_jwt_cookies)
 
 from . import app
 from .decorators import _jsonify
@@ -14,6 +15,8 @@ from .decorators import _jsonify
 app.config['JWT_SECRET_KEY'] = 'super-secret'  # Change this!
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = False
 jwt = JWTManager(app)
+app.config['JWT_BLACKLIST_ENABLED'] = True
+app.config['JWT_BLACKLIST_TOKEN_CHECKS'] = ['access', 'refresh']
 
 
 # Provide a method to create access tokens. The create_access_token()
@@ -246,3 +249,36 @@ def create_dev_token():
     expires = datetime.timedelta(days=365)
     token = create_access_token(current_user, expires_delta=expires)
     return {'token': token}
+
+
+# A storage engine to save revoked tokens. In production if
+# speed is the primary concern, redis is a good bet. If data
+# persistence is more important for you, postgres is another
+# great option. In this example, we will be using an in memory
+# store, just to show you how this might work. For more
+# complete examples, check out these:
+# https://github.com/vimalloc/flask-jwt-extended/blob/master/examples/redis_blacklist.py
+# https://github.com/vimalloc/flask-jwt-extended/tree/master/examples/database_blacklist
+blacklist = set()
+
+@jwt.token_in_blacklist_loader
+def check_if_token_in_blacklist(decrypted_token):
+    jti = decrypted_token['jti']
+    return jti  in blacklist
+
+# Endpoint for revoking the current users access token
+@app.route('/logout', methods=['DELETE'])
+@jwt_required
+def logout():
+    jti = get_raw_jwt()['jti']
+    blacklist.add(jti)
+    return jsonify({"msg": "Successfully logged out"}), 200
+
+# Endpoint for revoking the current users refresh token
+@app.route('/logout2', methods=['DELETE'])
+@jwt_refresh_token_required
+def logout2():
+    jti = get_raw_jwt()['jti']
+    blacklist.add(jti)
+    return jsonify({"msg": "Successfully logged out"}), 200
+
