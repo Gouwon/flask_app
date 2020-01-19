@@ -5,7 +5,8 @@ from flask import Flask, jsonify, request
 from flask_jwt_extended import (JWTManager, jwt_required, create_access_token, \
     get_jwt_identity, jwt_optional, get_jwt_claims, verify_jwt_in_request,\
     jwt_refresh_token_required, create_refresh_token, get_current_user, fresh_jwt_required, token_in_blacklist_loader,
-    get_raw_jwt, set_access_cookies, set_refresh_cookies, unset_jwt_cookies)
+    get_raw_jwt, set_access_cookies, set_refresh_cookies, unset_jwt_cookies,
+    get_csrf_token)
 
 from . import app
 from .decorators import _jsonify
@@ -17,6 +18,9 @@ app.config['JWT_ACCESS_TOKEN_EXPIRES'] = False
 jwt = JWTManager(app)
 app.config['JWT_BLACKLIST_ENABLED'] = True
 app.config['JWT_BLACKLIST_TOKEN_CHECKS'] = ['access', 'refresh']
+app.config['JWT_TOKEN_LOCATION'] = ['cookies']
+app.config['JWT_ACCESS_COOKIE_PATH'] = '/api/'
+app.config['JWT_REFRESH_COOKIE_PATH'] = '/token/refresh'
 
 
 # Provide a method to create access tokens. The create_access_token()
@@ -51,11 +55,22 @@ def ttt():
     # function, and get the identity of this object from the
     # user_identity_loader function.
     access_token = create_access_token(identity=user)
+    refresh_token = create_refresh_token(identity=user)
+
     ret = {'access_token': access_token,
-        'refresh_token': create_refresh_token(identity=user),
+        'refresh_token': refresh_token,
     }
 
-    return jsonify(ret), 200
+    # With JWT_COOKIE_CSRF_PROTECT set to True, set_access_cookies() and
+    # set_refresh_cookies() will now also set the non-httponly CSRF cookies
+    # as wel
+    res = jsonify({'login': True})
+    set_access_cookies(res, access_token)
+    set_refresh_cookies(res, refresh_token)
+
+    # return jsonify(ret), 200
+    return res
+    
 
 
 # Protect a view with jwt_required, which requires a valid access token
@@ -71,6 +86,11 @@ def protected():
         'current_identity': get_jwt_identity(),  # test
         'current_roles': get_jwt_claims()['roles']  # ['foo', 'bar']
     }
+
+
+    ## return render_template(
+    ##     "form.html", csrf_token=(get_raw_jwt() or {}).get("csrf")
+    ## )
     return jsonify(ret), 200
 
 # Partially protecting routes
@@ -203,7 +223,7 @@ def admin_only_approach():
     print("\n\n\nadmin_only_approachadmin_only_approach()")
     return jsonify(secret_message="go banana!") 
 
-@app.route('/refresh', methods=['POST'])
+@app.route('/token/refresh', methods=['POST'])
 @jwt_refresh_token_required
 @_jsonify
 def refresh():
@@ -214,8 +234,16 @@ def refresh():
     # }
     # generate non-fresh access token
     ret = {
-        'access_token': create_access_token(identity=current_user, fresh=False)
+        'access_token': create_access_token(identity=current_user, fresh=False), 
     }
+
+    # Set the access JWT and CSRF double submit protection cookies
+    # in this response
+    access_token = create_access_token(identity=current_user, fresh=False)
+
+    # setting jwt access cookie in the response
+    res = jsonify({'refresh': True})
+    set_access_cookies(res, access_token)
     return ret
 
 # making fresh token by logging in.
@@ -282,3 +310,21 @@ def logout2():
     blacklist.add(jti)
     return jsonify({"msg": "Successfully logged out"}), 200
 
+# Because the JWTs are stored in an httponly cookie now, we cannot
+# log the user out by simply deleting the cookie in the frontend.
+# We need the backend to send us a response to delete the cookies
+# in order to logout. unset_jwt_cookies is a helper function to
+# do just that.
+@app.route('/token/remove', methods=['POST'])
+def token_remove_from_cookie():
+    res = jsonify({'logout': True})
+    unset_jwt_cookies(res)
+    return res
+
+@app.route('/api/example', methods=['GET'])
+@jwt_required
+@_jsonify
+def protected_api():
+    current_user = get_current_user()
+    username = get_jwt_identity()
+    return {'hello': 'from {}'.format(username)}
